@@ -1,0 +1,2 @@
+# m でカーソル位置のURLをクリップボードに保存する
+keymap m EXTERN_LINK "echo %s | pbcopy"

@@ -1,0 +1,6 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =4
+let g:netrw_dirhist_1='/Users/nobu/railsprojects/blog/app/models'
+let g:netrw_dirhist_2='/Users/nobu/dotfiles'
+let g:netrw_dirhist_3='/Users/nobu/ruby_lesson'
+let g:netrw_dirhist_4='/Users/nobu/dotfiles'
