@@ -2,7 +2,7 @@
 */.DS_Store
 ./dir0.txt
 /.vim/bundle/*
-!.vim/bundle/neobundle.vim/
+!.vim/bundle/neobundle.vim/*
 .w3m/cookie
 .w3m/history
 
