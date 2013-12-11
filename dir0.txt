@@ -1,1 +1,1 @@
-/Users/nobu/dotfiles/.vim/bundle
+/Users/nobu/dotfiles

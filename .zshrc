@@ -92,37 +92,50 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 #
 
 # Theme.
-ZSH_THEME='gonhainu'
-#ZSH_THEME='yonchu-2lines'
-
-# Remove any right prompt from display when accepting a command line.
-# This may be useful with terminals with other cut/paste methods.
-#setopt transient_rprompt
-
-# Certain escape sequences may be recognised in the prompt string.
-# e.g. Environmental variables $WINDOW
-setopt prompt_subst
-
-# Certain escape sequences that start with `%' are expanded.
-#setopt prompt_percent
-
-if [ ${UID} -eq 0 ]; then
-    # Prompt for "root" user (all red characters).
-    # Note: su - or sudo -s を行った場合は環境変数が引き継がれない
-    PROMPT="${reset_color}${fg[red]}[%n@%m:%~]%#${reset_color} "
-    PROMPT2="${reset_color}${fg[red]}%_>${reset_color} "
-    SPROMPT="${reset_color}${fg[red]}%r is correct? [n,y,a,e]:${reset_color} "
-else
-    # Prompt for "normal" user.
-    # Loading theme
-    if [ -f ~/.zsh/themes/"$ZSH_THEME".zsh-theme ]; then
-        echo "Loading theme: $ZSH_THEME"
-        source ~/.zsh/themes/"$ZSH_THEME".zsh-theme
-    else
-        echo "Error: could not load the theme '$ZSH_THEME'"
-    fi
-fi
+# ZSH_THEME='gonhainu'
+# #ZSH_THEME='yonchu-2lines'
+# 
+# # Remove any right prompt from display when accepting a command line.
+# # This may be useful with terminals with other cut/paste methods.
+# #setopt transient_rprompt
+# 
+# # Certain escape sequences may be recognised in the prompt string.
+# # e.g. Environmental variables $WINDOW
+# setopt prompt_subst
+# 
+# # Certain escape sequences that start with `%' are expanded.
+# #setopt prompt_percent
+# 
+# if [ ${UID} -eq 0 ]; then
+#     # Prompt for "root" user (all red characters).
+#     # Note: su - or sudo -s を行った場合は環境変数が引き継がれない
+#     PROMPT="${reset_color}${fg[red]}[%n@%m:%~]%#${reset_color} "
+#     PROMPT2="${reset_color}${fg[red]}%_>${reset_color} "
+#     SPROMPT="${reset_color}${fg[red]}%r is correct? [n,y,a,e]:${reset_color} "
+# else
+#     # Prompt for "normal" user.
+#     # Loading theme
+#     if [ -f ~/.zsh/themes/"$ZSH_THEME".zsh-theme ]; then
+#         echo "Loading theme: $ZSH_THEME"
+#         source ~/.zsh/themes/"$ZSH_THEME".zsh-theme
+#     else
+#         echo "Error: could not load the theme '$ZSH_THEME'"
+#     fi
+# fi
 # }}}
+
+function powerline_precmd() {
+  export PS1="$(~/dotfiles/.zsh/powerline-shell/powerline.py $? --shell zsh 2> /dev/null)"
+}
+function install_powerline_precmd() {
+  for s in "${precmd_functions[@]}" ; do
+    if [ "$s" = "powerline_precmd" ] ; then
+      return
+    fi
+  done
+  precmd_functions+=(powerline_precmd)
+}
+install_powerline_precmd
 
 ### Title (user@hostname) ###
 case "${TERM}" in
@@ -136,12 +149,10 @@ esac
 # ---------------------------
 # Other Settings
 # ---------------------------
-### RVM ###
-#if [[ -s ~/.rvm/scripts/rvm ]]; then source ~/.rvm/scripts/rvm; fi
 
 ### Macports ###
 # case "${OSTYPE}" in
-# 	darwin*)
+#   darwin*)
 # 		export PATH=/opt/local/bin:/opt/local/sbin:$PATH
 # 		export MANPATH=/opt/local/share/man:/opt/local/man:$MANPATH
 # 	;;
@@ -218,96 +229,14 @@ fi
 
 autoload -U add-zsh-hook
 
-#
-# Notification of local host command
-# ----------------------------------
-#
-# Automatic notification via growlnotify / notify-send
-#
-#
-# Notification of remote host command
-# -----------------------------------
-#
-# "==ZSH LONGRUN COMMAND TRACKER==" is printed after long run command execution
-# You can utilize it as a trigger
-#
-# ## Example: iTerm2 trigger( http://qiita.com/yaotti/items/3764572ea1e1972ba928 )
-#
-#  * Trigger regex: ==ZSH LONGRUN COMMAND TRACKER==(.*)
-#  * Parameters: \1
-#
-
-#export __timetrack_threshold=20 # seconds
-
-#function __my_preexec_start_timetrack() {
-#    local command=$1
-
-#    export __timetrack_start=`date +%s`
-#    export __timetrack_command="$command"
-#}
-#
-#function __my_preexec_end_timetrack() {
-#    local exec_time
-#    local command=$__timetrack_command
-#    local notify_method
-#    local message
-#
-#    export __timetrack_end=`date +%s`
-#
-#    if test -n "${REMOTEHOST}${SSH_CONNECTION}"; then
-#        notify_method="remotehost"
-#    elif which growlnotify >/dev/null 2>&1; then
-#        notify_method="growlnotify"
-#    elif which notify-send >/dev/null 2>&1; then
-#        notify_method="notify-send"
-#    else
-#        return
-#    fi
-#
-#    if [ -z "$__timetrack_start" ] || [ -z "$__timetrack_threshold" ]; then
-#        return
-#    fi
-#
-#    exec_time=$((__timetrack_end-__timetrack_start))
-#    if [ -z "$command" ]; then
-#        command="<UNKNOWN>"
-#    fi
-#
-#    message="Command finished!\nTime: $exec_time seconds\nCOMMAND: $command"
-#
-#    if [ "$exec_time" -ge "$__timetrack_threshold" ]; then
-#        case $notify_method in
-#            "remotehost" )
-#        # show trigger string
-#                echo -e "\e[0;30m==ZSH LONGRUN COMMAND TRACKER==$(hostname -s): $command ($exec_time seconds)\e[m"
-#        sleep 1
-#        # wait 1 sec, and then delete trigger string
-#        echo -e "\e[1A\e[2K"
-#                ;;
-#            "growlnotify" )
-#                echo "$message" | growlnotify -n "ZSH timetracker" --appIcon Terminal
-#                ;;
-#            "notify-send" )
-#                notify-send "ZSH timetracker" "$message"
-#                ;;
-#        esac
-#    fi
-#
-#    unset __timetrack_start
-#    unset __timetrack_command
-#}
-#
-#if which growlnotify >/dev/null 2>&1 ||
-#    which notify-send >/dev/null 2>&1 ||
-#    test -n "${REMOTEHOST}${SSH_CONNECTION}"; then
-#    add-zsh-hook preexec __my_preexec_start_timetrack
-#    add-zsh-hook precmd __my_preexec_end_timetrack
-#fi
-
-function feedly() {
-  url=`currentwebpage -u`
-  open -a Google\ Chrome "http://www.feedly.com/home#subscription/feed/$url"
-}
+case ${OSTYPE} in
+  darwin*)
+    function feedly() {
+      url=`currentwebpage -u`
+      open -a Google\ Chrome "http://www.feedly.com/home#subscription/feed/$url"
+    }
+  ;;
+esac
 
 # ディレクトリごとに区切る
 # http://mollifier.hatenablog.com/entry/20081214/1229229752
@@ -316,6 +245,7 @@ select-word-style default
 zstyle ':zle:*' word-chars " /=;@+{},|"
 zstyle ':zle:*' word-style unspecified
 
-source /Users/nobu/dotfiles/.zsh/plugin/zaw/zaw.zsh
-source /Users/nobu/dotfiles/.zsh/tool/growl.zsh
-source /Users/nobu/dotfiles/.zsh/tool/clipboard.zsh
+source $HOME/dotfiles/.zsh/plugin/zaw/zaw.zsh
+source $HOME/dotfiles/.zsh/tool/growl.zsh
+source $HOME/dotfiles/.zsh/tool/clipboard.zsh
+source /Users/nobu/.zsh/zsh_prompt/.zshrc.prompt

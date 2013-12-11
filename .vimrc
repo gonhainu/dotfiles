@@ -31,6 +31,7 @@ set wildmenu " コマンドライン補完を便利に
 set wildmode=list:full " リスト表示，最長マッチ
 " タイプ途中のコマンドを画面最下行に表示
 set showcmd
+set showtabline=2
 " 検索語を強調表示（<C-L>を押すと現在の強調表示を解除する）
 set hlsearch
 " インクリメンタルサーチを有効化
@@ -100,12 +101,27 @@ vnoremap k gk
 noremap : ;
 noremap ; :
 
+" jjでEsc
+inoremap <silent> jj <Esc>
+
+" タブ移動を簡単にする
+" <a href="http://doruby.kbmj.com/aisi/20091218/Vim__" target="_blank" rel="noreferrer" style="cursor:help;display:inline !important;">http://doruby.kbmj.com/aisi/20091218/Vim__</a>
+nnoremap <silent> <leader>tf :<c-u>tabfirst<cr>
+nnoremap <silent> <leader>tl :<c-u>tablast<cr>
+nnoremap <silent> <leader>tn :<c-u>tabnext<cr>
+nnoremap <silent> <leader>tN :<c-u>tabNext<cr>
+nnoremap <silent> <leader>tp :<c-u>tabprevious<cr>
+nnoremap <silent> <leader>te :<c-u>tabedit<cr>
+nnoremap <silent> <leader>tc :<c-u>tabclose<cr>
+nnoremap <silent> <leader>to :<c-u>tabonly<cr>
+nnoremap <silent> <leader>ts :<c-u>tabs<cr>
+
 " 括弧自動補完
-inoremap {{ {}<LEFT>
-inoremap [[ []<LEFT>
-inoremap (( ()<LEFT>
-inoremap "" ""<LEFT>
-inoremap '' ''<LEFT>
+" inoremap {{ {}<LEFT>
+" inoremap [[ []<LEFT>
+" inoremap (( ()<LEFT>
+" inoremap "" ""<LEFT>
+" inoremap '' ''<LEFT>
 vnoremap { "zdi^V{<C-R>z}<ESC>
 vnoremap [ "zdi^V[<C-R>z]<ESC>
 vnoremap ( "zdi^V(<C-R>z)<ESC>
@@ -195,32 +211,12 @@ set pastetoggle=<F10>
 "inoremap <C-a> <HOME>
 "}}}
 
-" " pathogenでftdetectなどをloadさせるために一度ファイルタイプ判定をoff
-" filetype off
-" " pathogen.vimによってbundle配下のpluginをpathに加える
-" call pathogen#runtime_append_all_bundles()
-" call pathogen#helptags()
-" set helpfile=$VIMRUNTIME/doc/help.txt
-" " ファイルタイプ判定をon
-" filetype plugin on
-
-"python from powerline.bindings.vim import source_plugin; source_plugin()
-"set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim/
-"let g:Powerline_symbols = 'fancy'
+let g:Powerline_symbols = 'fancy'
 
 " colorschemeの設定
 "{{{
 set background=dark
 syntax enable
-
-"------------------------
-" molokai
-"------------------------
-" colorscheme molokai
-" let g:molokai_original = 1
-" let g:rehash256 = 1
-
-"}}}
 
 "autocmd FileType *
 "\ if &|:omnifunc == "
@@ -465,6 +461,11 @@ NeoBundle 'basyura/unite-rails' "{{{
   aug END
 "}}}
 
+NeoBundle 'rhysd/accelerated-jk' "{{{
+  let g:accelerrated_jk_acceleration_table = [10,5,3]
+  nmap j <Plug>(accelerated_jk_gj)
+  nmap k <Plug>(accelerated_jk_gk)
+"}}}
 NeoBundle 'basyura/twibill.vim'
 NeoBundle 'basyura/bitly.vim'
 NeoBundle 'mattn/webapi-vim'
@@ -484,6 +485,7 @@ NeoBundle 'Shougo/vimproc', {
       \    },
       \ }
 NeoBundle 'Shougo/vimfiler'
+NeoBundle 'Shougo/vimshell.vim'
 NeoBundle 'AndrewRadev/switch.vim'
 NeoBundle 'scrooloose/syntastic' "{{{
   let g:syntastic_enable_signs = 1
@@ -492,6 +494,14 @@ NeoBundle 'scrooloose/syntastic' "{{{
   let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['ruby'] }
   let g:syntastic_ruby_checkers = ['rubocop']
   let g:syntastic_quiet_warnings = 0
+  augroup AutoSyntastic
+    autocmd!
+    autocmd BufWritePost *.c,*.cpp,*.pl call s:syntastic()
+  augroup END
+  function! s:syntastic()
+    SyntasticCheck
+    call lightline#update()
+  endfunction
 "}}}
 NeoBundle 'tpope/vim-surround' "{{{
   let g:surround_custom_mapping = {}
@@ -621,16 +631,16 @@ NeoBundle 'osyo-manga/vim-over' "{{{
 
 NeoBundle 'osyo-manga/vim-anzu' "{{{
   " キーマップ
-  nmap n nzz<Plug>(anzu-update-search-status)
-  "nmap n n<Plug>(anzu-n)
-  nmap N Nzz<Plug>(anzu-update-search-status)
-  "nmap N N<Plug>(anzu-N)
+  "nmap n nzz<Plug>(anzu-update-search-status)
+  nmap n <Plug>(anzu-n)
+  "nmap N Nzz<Plug>(anzu-update-search-status)
+  nmap N <Plug>(anzu-N)
   nmap * <Plug>(anzu-star)
   nmap # <Plug>(anzu-sharp)
   " ESC2回押しで検索ハイライト消去
-  nmap <Esc><Esc> <Plug>(anzu-clear-search-status)<Plug>(anzu-clear-sign-matchline):nohlsearch<CR>
+  nmap <Esc><Esc> <Plug>(anzu-clear-search-status):nohlsearch<CR>
   " format = (該当数/全体数)
-  let g:anzu_status_format = "(%i/%l)"
+  let g:anzu_status_format = "%p(%i/%l)"
 "}}}
 
 NeoBundle 'LeafCage/yankround.vim' "{{{
@@ -646,21 +656,137 @@ NeoBundle 'LeafCage/yankround.vim' "{{{
 "}}}
 
 NeoBundle 'kien/ctrlp.vim'
-NeoBundle 'bling/vim-airline' "{{{
-  let g:airline#extensions#tabline#enabled = 1
-  let g:airline#extensions#tabline#left_alt_sep = ''
-  let g:airline#extensions#tabline#left_sep = ''
+" NeoBundle 'bling/vim-airline' "{{{
+"   let g:airline#extensions#tabline#enabled = 1
+"   let g:airline#extensions#tabline#left_alt_sep = "\u2b81"
+"   let g:airline#extensions#tabline#left_sep = "\u2b80"
+" 
+"   if !exists('g:airline_symbols')
+"     let g:airline_symbols = {}
+"   endif
+"   let g:airline_left_sep = '⮀'
+"   let g:airline_left_alt_sep = '⮁'
+"   let g:airline_right_sep = '⮂'
+"   let g:airline_right_alt_sep = '⮃'
+"   let g:airline_symbols.branch = '⭠'
+"   let g:airline_symbols.readonly = '⭤'
+"   let g:airline_symbols.linenr = '⭡'
+"
+"   let g:airline_theme = 'solarized'
+"
+"   "let g:airline#extensions#anzu#apply = 1
+"
+"   " vim-anzuの表示を statuslineに
+"   let g:airline#extensions#anzu#enabled = 0 
+"   let g:airline_section_c = '%F %{anzu#search_status()}'
+"   " whitespace無効
+"   let g:airlineeh#extensions#whitespace#enable = 0
+"}}}
+NeoBundle 'itchyny/lightline.vim' "{{{
+  let g:lightline = {
+        \ 'colorscheme': 'solarized', 
+        \ 'mode_map': {'c': 'NORMAL'}, 
+        \ 'active': {
+        \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename', 'anzu'], [ 'ctrlpmark' ] ],
+        \   'right': [ [ 'syntastic', 'lineinfo' ],
+        \              [ 'percent' ], 
+        \              [ 'fileformat', 'fileencoding', 'filetype' ] ]
+        \ }, 
+        \ 'component': {
+        \   'lineinfo': '⭡ %3l:%-2v', 
+        \ }, 
+        \ 'component_expand': {
+        \   'syntastic': 'SyntasticStatuslineFlag', 
+        \ },
+        \ 'component_type': {
+        \   'syntastic': 'error',
+        \ }, 
+        \ 'component_function': {
+        \   'modified': 'MyModified',
+        \   'readonly': 'MyReadonly',
+        \   'fugitive': 'MyFugitive',
+        \   'filename': 'MyFilename',
+        \   'fileformat': 'MyFileformat',
+        \   'filetype': 'MyFiletype',
+        \   'fileencoding': 'MyFileencoding',
+        \   'mode': 'MyMode', 
+        \   'anzu': 'anzu#search_status', 
+        \   'ctrlpmark': 'CtrlPMark', 
+        \ }, 
+        \ 'separator': { 'left': "\u2b80",  'right': "\u2b82" },
+        \ 'subseparator': { 'left': "\u2b81",  'right': "\u2b83" },
+        \ }
 
-  let g:airline_powerline_fonts = 1
-  let g:airline_theme = 'solarized'
+  function! MyModified()
+    return &ft =~ 'help\|vimfiler\|gundo' ? '' : &modified ? '+' : &modifiable ? '' : '-'
+  endfunction
 
-  "let g:airline#extensions#anzu#apply = 1
+  function! MyReadonly()
+    return &ft !~? 'help\|vimfiler\|gundo' && &readonly ? '⭤' : ''
+  endfunction
 
-  " vim-anzuの表示を statuslineに
-  let g:airline#extensions#anzu#enabled = 0 
-  let g:airline_section_c = '%F %{anzu#search_status()}'
-  " whitespace無効
-  let g:airlineeh#extensions#whitespace#enable = 0
+  function! MyFilename()
+    return ('' != MyReadonly() ? MyReadonly() . ' ' : '') .
+          \ (&ft == 'vimfiler' ? vimfiler#get_status_string() :
+          \  &ft == 'unite' ? unite#get_status_string() :
+          \  &ft == 'vimshell' ? vimshell#get_status_string() :
+          \ '' != expand('%:t') ? expand('%:t') : '[No Name]') .
+          \ ('' != MyModified() ? ' ' . MyModified() : '')
+  endfunction
+
+  function! MyFugitive()
+    try
+      if &ft !~? 'vimfiler\|gundo' && exists('*fugitive#head')
+        let _ = fugitive#head()
+        return strlen(_) ? '⭠ '._ : ''
+      endif
+    catch
+    endtry
+    return ''
+  endfunction
+
+  function! MyFileformat()
+    return winwidth(0) > 70 ? &fileformat : ''
+  endfunction
+
+  function! MyFiletype()
+    return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
+  endfunction
+
+  function! MyFileencoding()
+    return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
+  endfunction
+
+  function! MyMode()
+    return winwidth(0) > 60 ? lightline#mode() : ''
+  endfunction 
+
+  function! CtrlPMark()
+    if expand('%:t') =~ 'ControlP'
+      call lightline#link('iR'[g:lightline.ctrlp_regex])
+      return lightline#concatenate([g:lightline.ctrlp_prev, g:lightline.ctrlp_item
+            \ , g:lightline.ctrlp_next], 0)
+    else
+      return ''
+    endif
+  endfunction
+
+  let g:ctrlp_status_func = {
+        \ 'main': 'CtrlPStatusFunc_1',
+        \ 'prog': 'CtrlPStatusFunc_2',
+        \ }
+
+  function! CtrlPStatusFunc_1(focus, byfname, regex, prev, item, next, marked)
+    let g:lightline.ctrlp_regex = a:regex
+    let g:lightline.ctrlp_prev = a:prev
+    let g:lightline.ctrlp_item = a:item
+    let g:lightline.ctrlp_next = a:next
+    return lightline#statusline(0)
+  endfunction
+
+  function! CtrlPStatusFunc_2(str)
+    return lightline#statusline(0)
+  endfunction
 "}}}
 
 NeoBundle 'altercation/vim-colors-solarized' "{{{
@@ -685,8 +811,11 @@ NeoBundle 'kana/vim-smartchr' " {{{
   "autocmd FileType perl inoremap <buffer> <expr> . smartchr#loop(' . ', '->', '.')
   "autocmd FileType perl inoremap <buffer> <expr> = smartchr#loop(' = ', ' => ', '=')
   inoremap <expr> = smartchr#loop(' = ', '=', ' == ', ' === ', '!=')
+  autocmd FileType cpp inoremap <buffer> <expr> . smartchr#loop('.', '->')
 " }}}
 NeoBundle 'vim-scripts/sudo.vim'
+NeoBundle 'mkitt/tabline.vim'
+NeoBundle 'airblade/vim-gitgutter'
 
 "NeoBundle 'http://git.code.sf.net/p/vim-latex/vim-latex.git'
 
