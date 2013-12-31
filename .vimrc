@@ -369,7 +369,7 @@ let g:neosnippet#snippets_directory='~/.vim/bundle/vim-snippets/snippets'
 " Ruby Reference 1.9.3
 " http://doc.okkez.net/archives/
 " refe
-let g:ref_use_vimproc = 0 " vimprocをインストールしてない場合は0を指定
+"let g:ref_use_vimproc = 0 " vimprocをインストールしてない場合は0を指定
 let g:ref_open = 'split'
 let g:ref_refe_cmd = expand('~/dotfiles/.vim/ref/ruby-refm-1.9.3/refe-1_9_3')
 
@@ -469,7 +469,12 @@ NeoBundle 'rhysd/accelerated-jk' "{{{
 NeoBundle 'basyura/twibill.vim'
 NeoBundle 'basyura/bitly.vim'
 NeoBundle 'mattn/webapi-vim'
-NeoBundle 'mattn/emmet-vim'
+NeoBundle 'mattn/emmet-vim' "{{{
+  let g:user_emmet_settings = {
+        \ 'indentation':'  ',
+        \ 'lang':'ja'
+        \ }
+"}}}
 NeoBundle 'tyru/open-browser.vim'
 NeoBundle 'h1mesuke/unite-outline'
 NeoBundle 'Shougo/unite.vim'
@@ -491,12 +496,12 @@ NeoBundle 'scrooloose/syntastic' "{{{
   let g:syntastic_enable_signs = 1
   let g:syntastic_auto_loc_list = 2
   " rubocop
-  let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['ruby'] }
+  let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['ruby', 'eruby'] }
   let g:syntastic_ruby_checkers = ['rubocop']
   let g:syntastic_quiet_warnings = 0
   augroup AutoSyntastic
     autocmd!
-    autocmd BufWritePost *.c,*.cpp,*.pl call s:syntastic()
+    autocmd BufWritePost *.c,*.cpp,*.pl,*.py call s:syntastic()
   augroup END
   function! s:syntastic()
     SyntasticCheck
@@ -514,35 +519,35 @@ NeoBundle 'tpope/vim-surround' "{{{
     \ }
   let g:surround_custom_mapping.ruby = {
     \ '-': "<% \r %>",
-    \ '=':  "<%= \r %>",
-    \ '9':  "(\r)",
-    \ '5':  "%(\r)",
-    \ '%':  "%(\r)",
-    \ 'w':  "%w(\r)",
-    \ '#':  "#{\r}",
-    \ '3':  "#{\r}",
-    \ 'e':  "begin \r end",
-    \ 'E':  "<<EOS \r EOS",
-    \ 'i':  "if \1if\1 \r end",
-    \ 'u':  "unless \1unless\1 \r end",
-    \ 'c':  "class \1class\1 \r end",
-    \ 'm':  "module \1module\1 \r end",
-    \ 'd':  "def \1def\1\2args\r..*\r(&)\2 \r end",
-    \ 'p':  "\1method\1 do \2args\r..*\r|&| \2\r end",
-    \ 'P':  "\1method\1 {\2args\r..*\r|&|\2 \r }",
+    \ '=': "<%= \r %>",
+    \ '9': "(\r)",
+    \ '5': "%(\r)",
+    \ '%': "%(\r)",
+    \ 'w': "%w(\r)",
+    \ '#': "#{\r}",
+    \ '3': "#{\r}",
+    \ 'e': "begin \r end",
+    \ 'E': "<<EOS \r EOS",
+    \ 'i': "if \1if\1 \r end",
+    \ 'u': "unless \1unless\1 \r end",
+    \ 'c': "class \1class\1 \r end",
+    \ 'm': "module \1module\1 \r end",
+    \ 'd': "def \1def\1\2args\r..*\r(&)\2 \r end",
+    \ 'p': "\1method\1 do \2args\r..*\r|&| \2\r end",
+    \ 'P': "\1method\1 {\2args\r..*\r|&|\2 \r }",
     \ }
   let g:surround_custom_mapping.javascript = {
-    \ 'f':  "function(){ \r }"
+    \ 'f': "function(){ \r }"
     \ }
   let g:surround_custom_mapping.lua = {
-    \ 'f':  "function(){ \r }"
+    \ 'f': "function(){ \r }"
     \ }
   let g:surround_custom_mapping.python = {
-    \ 'p':  "print( \r)",
-    \ '[':  "[\r]",
+    \ 'p': "print( \r)",
+    \ '[': "[\r]",
     \ }
   let g:surround_custom_mapping.vim= {
-    \'f':  "function! \r endfunction"
+    \'f': "function! \r endfunction"
     \ }
 
   nmap s <plug>Ysurround
@@ -558,7 +563,8 @@ NeoBundle 'tpope/vim-endwise' "{{{
   let g:endwise_no_mappings=1
 "}}}
 NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'tpope/vim-rails' "{{{
+NeoBundle 'tpope/vim-rails',  { 'autoload': {
+  \ 'filetypes' : ['haml', 'ruby', 'eruby'] }} "{{{
   " 有効化
   let g:rails_default_file='config/database.yml'
   let g:rails_level = 4
@@ -810,17 +816,51 @@ NeoBundle 'kana/vim-smartchr' " {{{
   inoremap <expr> , smartchr#loop(', ', ',  ', ',')
   "autocmd FileType perl inoremap <buffer> <expr> . smartchr#loop(' . ', '->', '.')
   "autocmd FileType perl inoremap <buffer> <expr> = smartchr#loop(' = ', ' => ', '=')
-  inoremap <expr> = smartchr#loop(' = ', '=', ' == ', ' === ', '!=')
+  inoremap <expr> = smartchr#loop(' = ', '=', ' == ', ' => ', ' === ', '!=')
   autocmd FileType cpp inoremap <buffer> <expr> . smartchr#loop('.', '->')
 " }}}
 NeoBundle 'vim-scripts/sudo.vim'
 NeoBundle 'mkitt/tabline.vim'
 NeoBundle 'airblade/vim-gitgutter'
+NeoBundle 'bonsaiben/bootstrap-snippets'
+NeoBundle 'MarcWeber/vim-addon-mw-utils'
+NeoBundle 'tomtom/tlib_vim'
+NeoBundle 'garbas/vim-snipmate'
+NeoBundleLazy 'alpaca-tc/alpaca_tags', {
+      \ 'rev': 'development', 
+      \ 'depends': ['Shougo/vimproc', 'Shougo/unite.vim'], 
+      \ 'autoload' : {
+      \   'commands' : ['Tags', 'Tags', 'TagsUpdate', 'TagsSet', 'TagsBundle', 'TagsCleanCache'], 
+      \   'unite_sources' : ['tags']
+      \ }}
+  let g:alpaca_update_tags_config = {
+        \ '_' : '-R --sort=yes --languages=-js,html,css', 
+        \ 'ruby': '--languages=+Ruby', 
+        \ }
+  augroup AlpacaTags
+    autocmd!
+    if exists(':Tags')
+      autocmd BufWritePost * TagsUpdate ruby
+      autocmd BufWritePost Gemfile TagsBundle
+      autocmd BufEnter * TagsSet
+    endif
+  augroup END
+
+  nnoremap <expr>tt  ':Unite tags -horizontal -buffer-name=tags -input='.expand("<cword>").'<CR>'
+
+NeoBundleLazy 'alpaca-tc/beautify.vim', {
+      \ 'autoload' : {
+      \   'commands' : [
+      \     {
+      \       'name' : 'Beautify', 
+      \       'complete' : 'customlist,beautify#complete_options'
+      \     }
+      \   ]
+      \ }}
 
 "NeoBundle 'http://git.code.sf.net/p/vim-latex/vim-latex.git'
 
 filetype plugin indent on
 filetype indent on
 NeoBundleCheck
-
 

@@ -1,6 +1,7 @@
 # ---------------------------
 # General Settings
 # ---------------------------
+typeset -U path PATH
 PATH=/usr/local/sbin:/usr/local/bin:$HOME/bin:$PATH
 MANPATH=/usr/local/share/man:$MANPATH
 EDITOR=/Applications/MacVim.app/Contents/MacOS/Vim
@@ -8,7 +9,6 @@ KCODE=u
 AUTOFEATURE=true
 LANG=ja_JP.UTF-8
 RSENSE_HOME="/usr/local/Cellar/rsense/0.3/libexec"
-
 
 setopt no_beep
 setopt auto_cd
@@ -19,7 +19,8 @@ setopt notify
 setopt equals
 
 ### Complement ###
-autoload -U compinit; compinit -u
+fpath=(/usr/local/share/zsh-completions $fpath)
+autoload -Uz compinit; compinit -u
 setopt auto_list
 setopt auto_menu
 setopt list_packed
@@ -166,6 +167,12 @@ eval "$(rbenv init -)"
 PATH="$HOME/.plenv/bin:$HOME/.plenv/shims:$PATH"
 eval "$(plenv init -)"
 
+### nvm ###
+[[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh
+#nvm use default
+npm_dir=${NVM_PATH}_modules
+export NODE_PATH=$npm_dir
+
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
 
@@ -174,6 +181,13 @@ PATH=${HOME}/.cabal/bin:$PATH
 
 ### Added by the TeXLive2012
 PATH=/usr/texbin:$PATH
+
+### Added by the R
+PATH=/Applications/R.app/Contents/MacOS:$PATH
+
+
+### Added by the Shoes
+PATH=/Applications/Shoes.app/Contents/MacOS:$PATH
 
 ### Solarized
 eval $(gdircolors ~/.dircolors-solarized)
@@ -248,4 +262,5 @@ zstyle ':zle:*' word-style unspecified
 source $HOME/dotfiles/.zsh/plugin/zaw/zaw.zsh
 source $HOME/dotfiles/.zsh/tool/growl.zsh
 source $HOME/dotfiles/.zsh/tool/clipboard.zsh
-source /Users/nobu/.zsh/zsh_prompt/.zshrc.prompt
+source $HOME/dotfiles/.zsh/zsh_prompt/.zshrc.prompt
+source /Users/nobu/dotfiles/.zsh/cscroll.zsh/cscroll.zsh
