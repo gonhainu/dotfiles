@@ -5,6 +5,7 @@ typeset -U path PATH
 PATH=/usr/local/sbin:/usr/local/bin:$HOME/bin:$PATH
 MANPATH=/usr/local/share/man:$MANPATH
 EDITOR=/Applications/MacVim.app/Contents/MacOS/Vim
+DROPBOX=$HOME/Dropbox/
 KCODE=u
 AUTOFEATURE=true
 LANG=ja_JP.UTF-8
@@ -60,15 +61,30 @@ alias ll='ls -l'
 alias la='ls -a'
 alias rm='rm -i'
 alias mi="open -a mi"
-alias emacs="open -a Emacs"
+alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs "$@"'
 #alias gnuplot="GNUTERM=aqua /usr/local/bin/gnuplot"
 #alias gnuplot="/usr/local/bin/gnuplot"
-alias octave="/Applications/Octave.app/Contents/Resources/bin/octave"
+alias octave="/usr/local/octave/3.8.0/bin/octave-3.8.0"
 alias chrome="open -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --disable-background-mode --disable-java --incognito"
 alias w3m='w3m -cookie'
 #alias tmux="tmuxx"
 alias p="qlmanage -p *"  
 alias pong='perl -nle '\''print "display notification \"$_\" with title \"Terminal\""'\'' | osascript'
+alias nicovideo='nicovideo-dl -u gonhainu.sphere@gmail.com -p younha0429 -t'
+alias youtube='youtube-dl -t'
+alias ffmpeg-mp3='for i in *.mp4; do ffmpeg -i $i -vn ${i%.mp4}.mp3; done'
+alias ffmpeg-flv='for i in *.flv; do ffmpeg -i $i -vn ${i%.flv}.mp3; done'
+alias ffmpeg-swf='for i in *.swf; do swfextract -m $i -o ${i%.swf}.mp3; done'
+alias ffmpeg-gif='ffmpeg -i *.mp4 -r 6 %04d.png && gm convert *.png hoge.gif && rm *.png'
+# フォルダ内にあるSWFの音声を抽出する
+alias swf-mp3='for i in *.swf; do swfextract -m $i -o ${i%.swf}.mp3; done'
+# プレイリストの作成(隠しファイルは含まない)
+alias mylist='find `pwd` -maxdepth 1 -mindepth 1 | grep -v "\/\." > mylist'
+# '~/Music/fav/'にある動画ファイルを再生する(音声のみ)
+alias music-f='cd ~/Music/fav && touch mylist.test && rm mylist* && mylist && mplayer -playlist mylist -novideo -loop 20'
+# '~/Music/new/'にある動画ファイルを再生する(音声のみ)
+alias music-n='cd ~/Music/new && touch mylist.test && rm mylist* && mylist && mplayer -playlist mylist -novideo -loop 20'
+alias gosh='rlwrap gosh'
 
 # key
 bindkey '^f' zaw-open-file
@@ -93,36 +109,36 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 #
 
 # Theme.
-# ZSH_THEME='gonhainu'
-# #ZSH_THEME='yonchu-2lines'
-# 
-# # Remove any right prompt from display when accepting a command line.
-# # This may be useful with terminals with other cut/paste methods.
-# #setopt transient_rprompt
-# 
-# # Certain escape sequences may be recognised in the prompt string.
-# # e.g. Environmental variables $WINDOW
-# setopt prompt_subst
-# 
-# # Certain escape sequences that start with `%' are expanded.
-# #setopt prompt_percent
-# 
-# if [ ${UID} -eq 0 ]; then
-#     # Prompt for "root" user (all red characters).
-#     # Note: su - or sudo -s を行った場合は環境変数が引き継がれない
-#     PROMPT="${reset_color}${fg[red]}[%n@%m:%~]%#${reset_color} "
-#     PROMPT2="${reset_color}${fg[red]}%_>${reset_color} "
-#     SPROMPT="${reset_color}${fg[red]}%r is correct? [n,y,a,e]:${reset_color} "
-# else
-#     # Prompt for "normal" user.
-#     # Loading theme
-#     if [ -f ~/.zsh/themes/"$ZSH_THEME".zsh-theme ]; then
-#         echo "Loading theme: $ZSH_THEME"
-#         source ~/.zsh/themes/"$ZSH_THEME".zsh-theme
-#     else
-#         echo "Error: could not load the theme '$ZSH_THEME'"
-#     fi
-# fi
+ZSH_THEME='gonhainu'
+#ZSH_THEME='yonchu-2lines'
+
+# Remove any right prompt from display when accepting a command line.
+# This may be useful with terminals with other cut/paste methods.
+#setopt transient_rprompt
+
+# Certain escape sequences may be recognised in the prompt string.
+# e.g. Environmental variables $WINDOW
+setopt prompt_subst
+
+# Certain escape sequences that start with `%' are expanded.
+#setopt prompt_percent
+
+if [ ${UID} -eq 0 ]; then
+    # Prompt for "root" user (all red characters).
+    # Note: su - or sudo -s を行った場合は環境変数が引き継がれない
+    PROMPT="${reset_color}${fg[red]}[%n@%m:%~]%#${reset_color} "
+    PROMPT2="${reset_color}${fg[red]}%_>${reset_color} "
+    SPROMPT="${reset_color}${fg[red]}%r is correct? [n,y,a,e]:${reset_color} "
+else
+    # Prompt for "normal" user.
+    # Loading theme
+    if [ -f ~/.zsh/themes/"$ZSH_THEME".zsh-theme ]; then
+        echo "Loading theme: $ZSH_THEME"
+        source ~/.zsh/themes/"$ZSH_THEME".zsh-theme
+    else
+        echo "Error: could not load the theme '$ZSH_THEME'"
+    fi
+fi
 # }}}
 
 function powerline_precmd() {
@@ -167,11 +183,17 @@ eval "$(rbenv init -)"
 PATH="$HOME/.plenv/bin:$HOME/.plenv/shims:$PATH"
 eval "$(plenv init -)"
 
-### nvm ###
-[[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh
-#nvm use default
-npm_dir=${NVM_PATH}_modules
-export NODE_PATH=$npm_dir
+### pyenv ###
+PATH="$HOME/.pyenv/bin:$HOME/.pyenv/shims:$PATH"
+if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+
+# ### nvm ###
+# [[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh
+# #nvm use default
+# npm_dir=${NVM_PATH}_modules
+# export NODE_PATH=$npm_dir
+### nodebrew ###
+PATH=$HOME/.nodebrew/current/bin:$PATH
 
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
@@ -242,6 +264,7 @@ if ! whereis autoload >/dev/null 2>&1; then
 fi
 
 autoload -U add-zsh-hook
+autoload -U zmv
 
 case ${OSTYPE} in
   darwin*)
@@ -259,8 +282,16 @@ select-word-style default
 zstyle ':zle:*' word-chars " /=;@+{},|"
 zstyle ':zle:*' word-style unspecified
 
+
 source $HOME/dotfiles/.zsh/plugin/zaw/zaw.zsh
 source $HOME/dotfiles/.zsh/tool/growl.zsh
 source $HOME/dotfiles/.zsh/tool/clipboard.zsh
-source $HOME/dotfiles/.zsh/zsh_prompt/.zshrc.prompt
-source /Users/nobu/dotfiles/.zsh/cscroll.zsh/cscroll.zsh
+# source $HOME/dotfiles/.zsh/zsh_prompt/.zshrc.prompt
+source $HOME/dotfiles/.zsh/cscroll.zsh/cscroll.zsh
+source $HOME/dotfiles/.zsh/tool/gibo-completion.zsh
+source $HOME/.pyenv/completions/pyenv.zsh
+source /usr/local/opt/nvm/nvm.sh
+# source $HOME/dotfiles/.zsh/completion/brew-cask.zsh
+fpath=($HOME/.zsh/plugin/cd-bookmark(N-/) $fpath)
+autoload -Uz cd-bookmark
+alias cdb='cd-bookmark'

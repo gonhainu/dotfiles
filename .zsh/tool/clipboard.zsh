@@ -22,5 +22,5 @@ function searchClipBoard() {
   zle reset-prompt
 };
 zle -N searchClipBoard
-bindkey '^[c' searchClipBoard
+bindkey '^p' searchClipBoard
     
