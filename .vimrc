@@ -66,7 +66,7 @@ set formatoptions=lmoq
 " スクロール次の余白確保
 set scrolloff=5
 " OSのクリップボードを使う
-set clipboard=unnamed,autoselect
+set clipboard=unnamed
 set cursorline " カーソル行をハイライト
 " カレントウィンドウにのみ罫線を引く
 augroup cch
@@ -96,6 +96,7 @@ match ZenkakuSpace /　/
 " ----------
 " <Leader>キーを[,]に変更
 let mapleader = ","
+let maplocalleader = ","
 noremap \ ,
 
 " 表示行単位で移動
@@ -703,8 +704,9 @@ NeoBundle 'scrooloose/syntastic' "{{{
   let g:syntastic_enable_signs = 1
   let g:syntastic_auto_loc_list = 2
   " rubocop
-  let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['ruby', 'eruby'] }
+  let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['ruby', 'eruby', 'python'] }
   let g:syntastic_ruby_checkers = ['rubocop']
+  let g:syntastic_python_chekers = ['flake8']
   let g:syntastic_quiet_messages = {'level': 'warnings'}
   augroup AutoSyntastic
     autocmd!
@@ -766,9 +768,9 @@ NeoBundle 'tpope/vim-surround' "{{{
 
 NeoBundle 'tpope/vim-markdown'
 NeoBundle 'tpope/vim-bundler'
-NeoBundle 'tpope/vim-endwise' "{{{
-  let g:endwise_no_mappings=1
-"}}}
+" NeoBundle 'tpope/vim-endwise' "{{{
+"   let g:endwise_no_mappings=1
+" "}}}
 NeoBundle 'tpope/vim-fugitive' "{{{
   nnoremap [git] <Nop>
   nmap <Leader>g [git]
@@ -836,11 +838,11 @@ NeoBundle 'vim-scripts/closetag.vim' "{{{
 "}}}
 NeoBundle 'vim-scripts/ruby-matchit'
 NeoBundle 'vim-scripts/Align'
-NeoBundle 'syui/cscroll.vim'
-NeoBundle 'syui/wauto.vim' "{{{
-  nmap <Leader>s <Plug>(AutoWriteStart)
-  nmap <Leader>ss <Plug>(AutoWriteStop)
-"}}}
+"NeoBundle 'syui/cscroll.vim'
+" NeoBundle 'syui/wauto.vim' "{{{
+"   nmap <Leader>s <Plug>(AutoWriteStart)
+"   nmap <Leader>ss <Plug>(AutoWriteStop)
+" "}}}
 
 NeoBundle 'kana/vim-submode' "{{{
   " Chrome bind
@@ -1202,6 +1204,9 @@ NeoBundleLazy 'kana/vim-smartinput' "{{{
         \                        '<Enter>',
         \                        '<Enter>')
 "}}}
+NeoBundle 'cohama/vim-smartinput-endwise' "{{{
+  call smartinput_endwise#define_default_rules()
+"}}}
 NeoBundle 'vim-scripts/sudo.vim'
 NeoBundle 'mkitt/tabline.vim'
 NeoBundle 'airblade/vim-gitgutter'
@@ -1269,64 +1274,108 @@ NeoBundleLazy 'Simple-Javascript-Indenter', {
 "}}}
 NeoBundle 'nathanaelkane/vim-indent-guides' "{{{
   let g:indent_guides_auto_colors=0
-  autocmd VimEnter,Colorscheme * :hi IndentGuideOdd  guibg=black    ctermbg=black
-  autocmd VimEnter,ColorScheme * :hi IndentGuideEben guibg=darkgrey ctermbg=darkgrey
-  hi IndentGuideOdd  guibg=black    ctermbg=black
-  hi IndentGuideEben guibg=darkgrey ctermbg=darkgrey
+  autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=black    ctermbg=235
+  autocmd VimEnter,ColorScheme * :hi IndentGuidesEven guibg=darkgrey ctermbg=236
   let g:indent_guides_enable_on_vim_startup=1
-  let g:indent_guides_start_level=2
-  let g:indent_guides_guide_size=1
+  let g:indent_guides_start_level=1
+  let g:indent_guides_guide_size=2
 "}}}
-NeoBundle 'Lokaltog/vim-easymotion' "{{{
-  let g:EasyMotion_do_mapping = 0
-
-  " =======================================
-  " Find Motions
-  " =======================================
-  " Jump to anywhere you want by just `4` or `3` key strokes without thinking!
-  " `s{char}{char}{target}`
-  nmap s <Plug>(easymotion-s2)
-  xmap s <Plug>(easymotion-s2)
-  omap z <Plug>(easymotion-s2)
-  " Of course, you can map to any key you want such as `<Space>`
-  " map <Space>(easymotion-s2)
-
-  " Turn on case sensitive feature
-  let g:EasyMotion_smartcase = 1
-
-  " =======================================
-  " Line Motions
-  " =======================================
-  " `JK` Motions: Extend line motions
-  map <Leader>j <Plug>(easymotion-j)
-  map <Leader>k <Plug>(easymotion-k)
-  " keep cursor column with `JK` motions
-  let g:EasyMotion_startofline = 0
-
-  " =======================================
-  " General Configuration
-  " =======================================
-  let g:EasyMotion_keys = ';HKLYUIOPNM,QWERTASDGZXCVBJF'
-  " Show target key with upper case to improve readability
-  let g:EasyMotion_use_upper = 1
-  " Jump to first match with enter & space
-  let g:EasyMotion_enter_jump_first = 1
-  let g:EasyMotion_space_jump_first = 1
-
-
-  " =======================================
-  " Search Motions
-  " =======================================
-  " Extend search motions with vital-over command line interface
-  " Incremental highlight of all the matches
-  " Now, you don't need to repetitively press `n` or `N` with EasyMotion feature
-  " `<Tab>` & `<S-Tab>` to scroll up/down a page with next match
-  " :h easymotion-command-line
-  nmap g/ <Plug>(easymotion-sn)
-  xmap g/ <Plug>(easymotion-sn)
-  omap g/ <Plug>(easymotion-tn)
-"}}}
+" NeoBundle 'Lokaltog/vim-easymotion' "{{{
+"   let g:EasyMotion_do_mapping = 0
+"
+"   " =======================================
+"   " Find Motions
+"   " =======================================
+"   " Jump to anywhere you want by just `4` or `3` key strokes without thinking!
+"   " `s{char}{char}{target}`
+"   nmap s <Plug>(easymotion-s2)
+"   xmap s <Plug>(easymotion-s2)
+"   omap z <Plug>(easymotion-s2)
+"   " Of course, you can map to any key you want such as `<Space>`
+"   " map <Space>(easymotion-s2)
+"
+"   " Turn on case sensitive feature
+"   let g:EasyMotion_smartcase = 1
+"
+"   " =======================================
+"   " Line Motions
+"   " =======================================
+"   " `JK` Motions: Extend line motions
+"   map <Leader>j <Plug>(easymotion-j)
+"   map <Leader>k <Plug>(easymotion-k)
+"   " keep cursor column with `JK` motions
+"   let g:EasyMotion_startofline = 0
+"
+"   " =======================================
+"   " General Configuration
+"   " =======================================
+"   let g:EasyMotion_keys = ';HKLYUIOPNM,QWERTASDGZXCVBJF'
+"   " Show target key with upper case to improve readability
+"   let g:EasyMotion_use_upper = 1
+"   " Jump to first match with enter & space
+"   let g:EasyMotion_enter_jump_first = 1
+"   let g:EasyMotion_space_jump_first = 1
+"
+"
+"   " =======================================
+"   " Search Motions
+"   " =======================================
+"   " Extend search motions with vital-over command line interface
+"   " Incremental highlight of all the matches
+"   " Now, you don't need to repetitively press `n` or `N` with EasyMotion feature
+"   " `<Tab>` & `<S-Tab>` to scroll up/down a page with next match
+"   " :h easymotion-command-line
+"   nmap g/ <Plug>(easymotion-sn)
+"   xmap g/ <Plug>(easymotion-sn)
+"   omap g/ <Plug>(easymotion-tn)
+" "}}}
 NeoBundle 'mattn/emoji-vim'
+" NeoBundle 'csexton/jekyll.vim' "{{{
+"   let g:jekyll_path = "~/gonhainu.github.io/octopress/source/"
+"   let g:jekyll_post_date = "%Y-%m-%d %H:%M"
+"   let g:jekyll_post_published = "false"
+"   let g:jekyll_prompt_categories = "true"
+"   let g:jekyll_comments = "true"
+"   map <Leader>jn :JekyllPost<CR>
+"   map <Leader>jl :JekyllList<CR>
+" "}}}
+NeoBundle 'glidenote/octoeditor.vim' "{{{
+  let g:octopress_path = '~/gonhainu.github.io/octopress'
+  map <Leader>on :OctopressNew<CR>
+  map <Leader>ol :OctopressList<CR>
+  " map <Leader>og :OcropressGrep<CR>
+  nmap <Leader>og :OctopressGenerate<CR>
+  nmap <Leader>od :OctopressDeploy<CR>
+"}}}
+" NeoBundle 'VimClojure' "{{{
+"   let vimclojure#HighlightBuiltins = 1
+"   let vimclojure#HighlightContrib = 1
+"   let vimclojure#DynamicHighlighting = 1
+"   let vimclojure#ParanRainbow = 1
+"   let vimclojure#WantNailgun = 1
+"   let vimclojure#NailgunClient = "/usr/local/stow/ngclient-2.3.1/ng"
+" "}}}
+NeoBundle 'tpope/vim-fireplace'
+NeoBundle 'amdt/vim-niji' "{{{
+"  let g:niji_matching_filetypes = ['ruby', 'python']
+"}}}
+" NeoBundle 'nvie/vim-flake8' "{{{
+"   let g:flake8_ignore='E501'
+" "}}}
+NeoBundle 'todesking/ruby_hl_lvar.vim' "{{{
+  " Highlight group name for Local variable
+  " Default: 'Identifier'
+  let g:ruby_hl_lvar_hl_group = 'RubyLocalVariable'
+
+  " Auto enable and refresh highlight when when text is changed. Useful but
+  " bit slow.
+  " Default: 1
+  let g:ruby_hl_lvar_auto_enable = 0
+
+  nmap <leader>he <Plug>(ruby_hl_lvar-enable)
+  nmap <leader>hd <Plug>(ruby_hl_lvar-disable)
+  nmap <leader>hr <Plug>(ruby_hl_lvar-refresh)
+"}}}
 NeoBundle 'http://git.code.sf.net/p/vim-latex/vim-latex.git'
 NeoBundle 'https://bitbucket.org/kovisoft/slimv'
 
@@ -1348,21 +1397,15 @@ endif
 let tex_flavor = 'latex'
 set grepprg=grep\ -nH\ $*
 set shellslash
-let g:Tex_BibtexFlavor = 'bibtex'
+let g:Tex_BibtexFlavor = '/usr/texbin/pbibtex'
+let g:Tex_BibtexFlavor = '/usr/texbin/upbibtex'
 let g:Tex_DefaultTargetFormat = 'pdf'
 let g:Tex_MultipleCompileFormats = 'pdf'
 let g:Tex_CompileRule_dvi = 'platex --interaction=nonstopmode $*'
 let g:Tex_CompileRule_pdf = 'dvipdfmx $*.dvi'
 let g:Tex_FormatDependency_pdf = 'dvi,pdf'
-
-let g:indent_guides_enable_on_vim_startup=1
-let g:indent_guides_auto_colors=0
-autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=black    ctermbg=235
-autocmd VimEnter,ColorScheme * :hi IndentGuidesEven guibg=darkgray ctermbg=236
-" hi IndentGuideOdd  ctermbg=black
-" hi IndentGuideEben ctermbg=darkgray
-let g:indent_guides_start_level=1
-let g:indent_guides_guide_size=1
+let g:Tex_MakeIndexFlavor = ''
+let g:Tex_View_Rule_pdf = '/usr/bin/open -a Preview.app'
 
 set tags=$HOME/.vim/tags/lisp.tags
 let g:paredit_mode=1
@@ -1385,3 +1428,10 @@ let g:slimv_swank_cmd = '!osascript -e "tell application \"iTerm2\" to do script
 let g:lisp_rainbow=1
 
 autocmd BufNewFile,BufRead *.asd set filetype=lisp
+
+" let g:indent_guides_auto_colors=0
+" autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=black    ctermbg=235
+" autocmd VimEnter,ColorScheme * :hi IndentGuidesEven guibg=darkgrey ctermbg=236
+" let g:indent_guides_enable_on_vim_startup=1
+" let g:indent_guides_start_level=1
+" let g:indent_guides_guide_size=1

@@ -1,1 +1,1 @@
-/Users/nobu/dotfiles
+/Users/nobu/Documents/workspace/Seminar/src

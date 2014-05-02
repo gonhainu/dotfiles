@@ -73,7 +73,8 @@ VI_CMD_PROMPT+='%{${fg_bold[yellow]}%}$(_client_ip)%{${reset_color}%}'
 VI_CMD_PROMPT+='[%{${fg_bold[magenta]}%}${WINDOW:+"#$WINDOW "}$([ -n "$TMUX" ] && tmux display -p "#I-#P ")%{${reset_color}%}'
 VI_CMD_PROMPT+='%{${fg[yellow]}%}%n%{${reset_color}%}%{${fg[green]}%}❖ %{${reset_color}%}%{${fg[yellow]}%}%m%{${reset_color}%}'
 VI_CMD_PROMPT+='%{${fg_bold[red]}%}%(1j,(%j),)%{${reset_color}%}'
-VI_CMD_PROMPT+=':%~%{${reset_color}%}]%(?.%{${fg[blue]}%}${PROMPT_NORMAL_SYMBOL}.%{${fg[red]}%}${PROMPT_ERROR_SYMBOL}) %{${reset_color}%}'
+VI_CMD_PROMPT+=':%{${reset_color}%}]%(?.%{${fg[blue]}%}${PROMPT_NORMAL_SYMBOL}.%{${fg[red]}%}${PROMPT_ERROR_SYMBOL}) %{${reset_color}%}'
+# VI_CMD_PROMPT+=':%~%{${reset_color}%}]%(?.%{${fg[blue]}%}${PROMPT_NORMAL_SYMBOL}.%{${fg[red]}%}${PROMPT_ERROR_SYMBOL}) %{${reset_color}%}'
 
 # For tmux-powerline
 TMUX_POWERLINE_PROMPT_INFO='$([ -n "$TMUX" ] && tmux setenv TMUXPWD_$(tmux display -p "#D" | tr -d %) "$PWD")'

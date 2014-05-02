@@ -295,3 +295,6 @@ source /usr/local/opt/nvm/nvm.sh
 fpath=($HOME/.zsh/plugin/cd-bookmark(N-/) $fpath)
 autoload -Uz cd-bookmark
 alias cdb='cd-bookmark'
+###airchrome###
+source /Users/nobu/.zsh/tool/airchrome.zsh/airchrome.zsh
+###airchrome###
