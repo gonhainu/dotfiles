@@ -32,10 +32,6 @@ set wildmode=list:full " リスト表示，最長マッチ
 " タイプ途中のコマンドを画面最下行に表示
 set showcmd
 set showtabline=2
-" 検索語を強調表示（<C-L>を押すと現在の強調表示を解除する）
-set hlsearch
-" インクリメンタルサーチを有効化
-set incsearch
 " ステータスラインを常に表示する
 set laststatus=2
 "set statusline=%<%f\ %m%r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}[%Y]%=%l,%c%V%8P
@@ -48,12 +44,6 @@ set guioptions+=a
 set ttymouse=xterm2
 " コマンドラインの高さを2行に
 set cmdheight=2
-" 検索の時に大文字小文字を区別しない
-" ただし大文字小文字の両方が含まれている場合は大文字小文字を区別する
-set ignorecase
-set smartcase
-" 検索時にファイルの最後まで行ったら最初に戻る
-set wrapscan
 "補完ウィンドウの設定 :help completopt
 set completeopt=menuone
 " 画面最後の行をできる限り表示する
@@ -103,16 +93,27 @@ augroup END
 " ----------
 " Keymapping {{{
 " ----------
+nnoremap [space] <Nop>
+nmap     <Space> [space]
+xmap     <Space> [space]
 " <Leader>キーを[,]に変更
-let mapleader = ","
-let maplocalleader = ","
-noremap \ ,
+" let mapleader = ","
+" let maplocalleader = ","
+" noremap \ ,
 
 " 表示行単位で移動
-noremap j gj
-noremap k gk
-vnoremap j gj
-vnoremap k gk
+nnoremap <silent> j gj
+nnoremap <silent> gj j
+nnoremap <silent> k gk
+nnoremap <silent> gk k
+nnoremap <silent> $ g$
+nnoremap <silent> g$ $
+vnoremap <silent> j gj
+vnoremap <silent> gj j
+vnoremap <silent> k gk
+vnoremap <silent> gk k
+vnoremap <silent> $ g$
+vnoremap <silent> g$ $
 " Ctrl-hjklでウィンドウ移動
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
@@ -156,6 +157,20 @@ nnoremap <silent> <leader>ts :<c-u>tabs<cr>
 " vnoremap " "zdi^V"<C-R>z^V"<ESC>
 " vnoremap ' "zdi'<C-R>z'<ESC>
 
+" バッファ切替 {{{
+nmap [space]n :<C-U>bnext<CR>
+nmap [space]p :<C-U>bprevious<CR>
+nnoremap <Leader>1   :e #1<CR>
+nnoremap <Leader>2   :e #2<CR>
+nnoremap <Leader>3   :e #3<CR>
+nnoremap <Leader>4   :e #4<CR>
+nnoremap <Leader>5   :e #5<CR>
+nnoremap <Leader>6   :e #6<CR>
+nnoremap <Leader>7   :e #7<CR>
+nnoremap <Leader>8   :e #8<CR>
+nnoremap <Leader>9   :e #9<CR>
+" バッファ一覧
+nmap ,b :buffers<CR>
 " spaceで次のbufferへ。backspaceで前のbufferへ。
 nmap <Space><Space> :MBEbn<CR>
 nmap <BS><BS> :MBEbp<CR>
@@ -167,6 +182,7 @@ map <F5> <Esc>:bn<CR>
 " F6でバッファを削除する
 map <F6> <Esc>:bnext \| bdelete #<CR>
 command! Bw :bnext \| bdelete #
+" }}}
 
 " .vimrcの編集を簡単にする{{{
 " http://vim-users.jp/2009/09/hack74/
@@ -194,7 +210,21 @@ nnoremap <silent> <Space>rg :<C-u>source $MYGVIMRC<CR>
 " endif
 "}}}
 
-
+" 検索設定
+" 検索語を強調表示（<C-L>を押すと現在の強調表示を解除する）
+set hlsearch
+" インクリメンタルサーチを有効化
+set incsearch
+" 検索の時に大文字小文字を区別しない
+" ただし大文字小文字の両方が含まれている場合は大文字小文字を区別する
+set ignorecase
+set smartcase
+" 検索時にファイルの最後まで行ったら最初に戻る
+set wrapscan
+nohlsearch " reset hilghlight
+nnoremap <silent> [space]/ :noh<CR>
+map * <Plug>(visualstar-*)N
+map # <Plug>(visualstar-#)N
 " Escの2回押しでハイライト消去
 nnoremap <Esc><Esc> :<C-u>nohlsearch<CR>
 

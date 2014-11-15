@@ -5,17 +5,86 @@
 " unite.vim
 "
 " バッファ一覧
-" 入力モードで開始する
-noremap <C-B> :Unite buffer<CR>
-" ファイル一覧
-noremap <C-N> :Unite -buffer-name=files file file/new<CR>
-" 最近使ったファイルの一覧
-noremap <C-Z> :Unite file_mru<CR>
+" " 入力モードで開始する
+" noremap <C-B> :Unite buffer<CR>
+" " ファイル一覧
+" noremap <C-N> :Unite -buffer-name=files file file/new<CR>
+" " 最近使ったファイルの一覧
+" noremap <C-Z> :Unite file_mru<CR>
+nnoremap [unite] <Nop>
+nmap ,u [unite]
+nnoremap <silent> [unite]ff   :<C-u>Unite -buffer-name=files buffer file file/new<CR>
+nnoremap <silent> [unite]fr   :<C-u>Unite -buffer-name=files file_mru<CR>
+nnoremap <silent> [unite]fa   :<C-u>Unite -buffer-name=files file_rec/async<CR>
+nnoremap <silent> [unite]d    :<C-u>Unite -buffer-name=files directory_mru<CR>
+nnoremap <silent> [unite]vff  :<C-u>Unite -vertical -buffer-name=files buffer file file/new<CR>
+nnoremap <silent> [unite]vfr  :<C-u>Unite -vertical -buffer-name=files file_mru <CR>
+nnoremap <silent> [unite]vp   :<C-u>Unite -vertical -winwidth=45 -no-quit -buffer-name=files buffer file<CR>
+nnoremap <silent> [unite]F    :<C-u>UniteWithBufferDir -buffer-name=files buffer file file/new<CR>
+nnoremap <silent> [unite]vF   :<C-u>UniteWithBufferDir -vertical -winwidth=45 -buffer-name=files buffer file file/new<CR>
+nnoremap <silent> [unite]b    :<C-u>Unite -buffer-name=buffers -prompt=Buffer>\  buffer<CR>
+nnoremap <silent> [unite]vb   :<C-u>Unite -vertical -buffer-name=buffers -prompt=Buffer>\  buffer<CR>
+nnoremap <silent> [unite]vB   :<C-u>Unite -vertical -buffer-name=buffers -prompt=Buffer>\  -winwidth=45 -no-quit buffer<CR>
+nnoremap <silent> [unite]o    :<C-u>Unite -vertical -winwidth=45 -wrap -no-quit -toggle -buffer-name=outline outline<CR>
+nnoremap <silent> [unite]"    :<C-u>Unite -buffer-name=register -prompt=">\  register<CR>
+nnoremap <silent> [unite]c    :<C-u>Unite -buffer-name=commands history/command<CR>
+nnoremap <silent> [unite]C    :<C-u>Unite -buffer-name=commands command<CR>
+nnoremap <silent> [unite]s    :<C-u>Unite -buffer-name=snippets snippet<CR>
+nnoremap <silent> [unite]u    :<C-u>Unite source<CR>
+nnoremap <silent> [unite]l    :<C-u>Unite -buffer-name=lines line<CR>
+nnoremap <silent> [unite]m    :<C-u>Unite -buffer-name=bookmark -prompt=bookmark> bookmark<CR>
+nnoremap <silent> [unite]rm   :<C-u>Unite -buffer-name=ref -prompt=ref> ref/man<CR>
+nnoremap <silent> [unite]g    :<C-u>Unite -buffer-name=grep grep<CR>
+nnoremap <silent> [unite]hd   :<C-u>Unite haddock -start-insert<CR>
 
 let s:bundle = neobundle#get("unite.vim")
 function! s:bundle.hooks.on_source(bundle)
+  let g:unite_enable_start_insert = 1
+
+  let g:unite_winheight = 15
+  let g:unite_winwidth = 45
+  let g:unite_source_grep_max_candidates = 500
   let g:unite_force_overwrite_statusline = 0
+
+  " ディレクトリに対するブックマークはvimfilerをデフォルトアクションにする
+  call unite#custom_default_action('source/bookmark/directory', 'vimfiler')
+
+  call unite#custom#source('file_rec,file_rec/async', 'filters',
+        \ ['converter_relative_word', 'matcher_default', 
+        \  'sorter_rank', 'converter_relative_abbr', 'converter_file_directory'])
+
+  call unite#custom#source(
+        \ 'file_mru', 'converers',
+        \ ['converter_file_directory'])
+
+  function! s:unite_my_settings()
+    " Overwrite settigs.
+    nmap <buffer> l     <Plug>(unite_chose_action)
+    nmap <buffer> <C-c> <Plug>(unite_chose_action)
+
+    imap <buffer> <TAB> <Plug>(unite_select_next_line)
+    nmap <buffer> <C-z> <Plug>(unite_toggle_tranpose_window)
+    imap <buffer> <C-z> <Plug>(unite_toggle_tranpose_window)
+    imap <buffer> <C-y> <Plug>(unite_narrowing_path)
+    nmap <buffer> <C-y> <Plug>(unite_narrowing_path)
+    nmap <buffer> <C-j> <Plug>(unite_toggle_auto_preview)
+
+    nmap <silent><buffer><expr> f unite#do_action('vimfiler')
+
+    " grep bufferの時はrをreplaceアクションにマップする
+    let unite = unite#get_current_unite()
+    if unite.buffer_name =~# '^grep'
+      nnoremap <silent><buffer><expr> r unite#do_action('replace')
+    else
+      nnoremap <silent><buffer><expr> r unite#do_action('rename')
+    endif
+
+    nnoremap <buffer><expr> S unite#mappings#set_current_fileter(
+          \ empty(unite#mappings#get_currentfilters() ? ['sorter_reverse'] : [])
+  endfunction
+  MyAutoCmd FileType unite call s:unite_my_settings()
 endfunction
+unlet s:bundle
 
 " unite-rails
 let s:bundle = neobundle#get("unite-rails")
@@ -40,6 +109,7 @@ function! s:bundle.hooks.on_source(bundle)
   aug END
 "}}}
 endfunction
+unlet s:bundle
 
 " vimfiler
 nnoremap <leader>e :VimFilerExplore -split -winwidth=30 -find -no-quit<CR>
@@ -48,12 +118,38 @@ let s:bundle = neobundle#get("vimfiler")
 function! s:bundle.hooks.on_source(bundle)
   let g:vimfiler_force_overwrite_statusline = 0
 endfunction
+unlet s:bundle
 
-" vimshell
+" vimshell {{{
+nnoremap <silent> ,vs :<C-u>VimShell<CR>
+
+function! s:my_chpwd(args, context)
+  call vimshell#execute('ls')
+endfunction
+
 let s:bundle = neobundle#get("vimshell.vim")
 function! s:bundle.hooks.on_source(bundle)
   let g:vimshell_force_overwrite_statusline = 0
+  if has('win32') || has('win64')
+    " Display user name on Windows.
+    let g:vimshell_prompt = $USERNAME."% "
+  else
+    let g:vimshell_prompt = $USER . "@" . hostname() . "% "
+  endif
+
+  let g:vimshell_right_prompt = '"[" . getcwd() . "]"'
+  let g:vimshell_max_command_history = 3000
+
+  MyAutoCmd FileType vimshell
+        \ call vimshell#hook#add('chpwd', 'my_chpwd', 'g:my_chpwd')
+
+  function! s:EarthquakeKeyMap()
+    nnoremap <buffer><expr> o OpenBrowserLine()
+  endfunction
+  MyAutoCmd FileType int-earthquake call s:EarthquakeKeyMap()
 endfunction
+unlet s:bundle
+" }}}
 
 " switch.vim
 nnoremap <Leader>t :<C-u>Switch<CR>
@@ -69,6 +165,7 @@ function! s:bundle.hooks.on_source(bundle)
   \   },
   \]
 endfunction
+unlet s:bundle
 
 " syntastic
 let s:bundle = neobundle#get("syntastic")
@@ -89,12 +186,21 @@ function! s:bundle.hooks.on_source(bundle)
     call lightline#update()
   endfunction
 endfunction
+unlet s:bundle
 
 " vim-surround
 nmap s <plug>Ysurround
 nmap ss <plug>Yssurround
+nmap ,( csw(
+nmap ,) csw)
+nmap ,{ csw{
+nmap ,} csw}
+nmap ,[ csw[
+nmap ,] csw]
+nmap ,' csw'
+nmap ," csw"
 
-let s:bundle = neobundle#get("syntastic")
+let s:bundle = neobundle#get("vim-surround")
 function! s:bundle.hooks.on_source(bundle)
   let g:surround_custom_mapping = {}
   let g:surround_custom_mapping._ = {
@@ -141,6 +247,7 @@ function! s:bundle.hooks.on_source(bundle)
   "let g:surround_{char2nr("-")} = ":\r"</plug></plug>
 "}}}
 endfunction
+unlet s:bundle
 
 " vim-fugitive {{{
 nnoremap [git] <Nop>
@@ -153,8 +260,8 @@ nnoremap [git]c :<C-u>Gcommit<CR>
 nnoremap [git]C :<C-u>Git commit --amend<CR>
 nnoremap [git]b :<C-u>Gblame<CR>
 " ftdetect is often failed
-"MyAutocmd BufEnter * if expand("%") =~ ".git/COMMIT_EDITMSG" | set ft=gitcommit | endif
-"MyAutocmd BufEnter * if expand("%") =~ ".git/rebase-merge" | set ft=gitrebase | endif
+" MyAutoCmd BufEnter * if expand("%") =~ ".git/COMMIT_EDITMSG" | set ft=gitcommit | endif
+" MyAutoCmd BufEnter * if expand("%") =~ ".git/rebase-merge" | set ft=gitrebase | endif
 " }}}
 
 " vim-rails {{{
@@ -179,6 +286,7 @@ function! s:bundle.hooks.on_source(bundle)
     au!
   aug END
 endfunction
+unlet s:bundle
 " }}}
 
 " vim-quickrun {{{
@@ -193,6 +301,7 @@ function! s:bundle.hooks.on_source(bundle)
         \ 'exec': ['%c run %s']
         \ }
 endfunction
+unlet s:bundle
 " }}}
 
 " tcomment_types {{{
@@ -205,6 +314,7 @@ function! s:bundle.hooks.on_source(bundle)
   let g:tcomment_types['ruby'] = '# %s'
   lef g:tcomment_types['python'] = '# %s'
 endfunction
+unlet s:bundle
 " }}}
 
 " closetag.vim {{{
@@ -212,6 +322,7 @@ let s:bundle = neobundle#get("vim-quickrun")
 function! s:bundle.hooks.on_source(bundle)
   let g:closetag_html_style = 1
 endfunction
+unlet s:bundle
 " }}}
 
 " vim-over {{{
@@ -234,6 +345,7 @@ function! s:bundle.hooks.on_source(bundle)
   " format = (該当数/全体数)
   let g:anzu_status_format = "%p(%i/%l)"
 endfunction
+unlet s:bundle
 " }}}
 
 " yankround.vim {{{
@@ -250,6 +362,7 @@ function! s:bundle.hooks.on_source(bundle)
   " 履歴取得数
   let g:yankround_max_history = 50
 endfunction
+unlet s:bundle
 " }}}
 
 " accelerated-jk
@@ -260,6 +373,7 @@ let s:bundle = neobundle#get("accelerated-jk")
 function! s:bundle.hooks.on_source(bundle)
   let g:accelerrated_jk_acceleration_table = [10,5,3]
 endfunction
+unlet s:bundle
 
 " emmet-vim
 let s:bundle = neobundle#get("emmet-vim")
@@ -269,10 +383,11 @@ function! s:bundle.hooks.on_source(bundle)
         \ 'lang':'ja'
         \ }
 endfunction
+unlet s:bundle
 
 " lightline.vim {{{
-let s:bundle = neobundle#get("lightline.vim")
-function! s:bundle.hooks.on_source(bundle)
+" let s:bundle = neobundle#get("lightline.vim")
+" function! s:bundle.hooks.on_source(bundle)
   let g:lightline = {
         \ 'colorscheme': 'wombat',
         \ 'mode_map': {'c': 'NORMAL'},
@@ -287,10 +402,10 @@ function! s:bundle.hooks.on_source(bundle)
         \              [ 'fileformat', 'fileencoding', 'filetype' ] ]
         \ },
         \ 'component': {
-        \   'lineinfo': '⭡ %3l:%-2v', 
+        \   'lineinfo': '⭡ %3l:%-2v',
         \ },
         \ 'component_expand': {
-        \   'syntastic': 'SyntasticStatuslineFlag', 
+        \   'syntastic': 'SyntasticStatuslineFlag',
         \ },
         \ 'component_type': {
         \   'syntastic': 'error',
@@ -355,7 +470,7 @@ function! s:bundle.hooks.on_source(bundle)
 
   function! MyMode()
     return winwidth(0) > 60 ? lightline#mode() : ''
-  endfunction 
+  endfunction
 
   function! CtrlPMark()
     if expand('%:t') =~ 'ControlP'
@@ -443,7 +558,7 @@ function! s:bundle.hooks.on_source(bundle)
     autocmd!
     autocmd TabEnter,BufWinEnter * call s:update_recent_buflist(expand('<amatch>'))
   augroup END
-endfunction
+" endfunction
 " }}}
 
 " vim-smartchr
@@ -489,19 +604,22 @@ function! s:bundle.hooks.on_source(bundle)
   " let g:go_golint_bin="~/go/src/github.com/golang/lint/golint/golint.go"
   " let g:go_goimports_bin="~/go/src/code.google.com/p/go.tools/cmd/goimports"
 endfunction
+unlet s:bundle
 
 " calender.vim {{{
 let s:bundle = neobundle#get("calendar.vim")
 function! s:bundle.hooks.on_source(bundle)
   let g:calendar_google_calendar = 1
 endfunction
+unlet s:bundle
 " }}}
 
 " unite-ruby-require.vim {{{
-let s:bundle = neobundle#get("calendar.vim")
+let s:bundle = neobundle#get("unite-ruby-require.vim")
 function! s:bundle.hooks.on_source(bundle)
   let g:unite_source_ruby_require_ruby_cammand = expand("~/.rbenv/shims/ruby")
 endfunction
+unlet s:bundle
 " }}}
 
 " vim_goshrepl {{{
@@ -545,6 +663,7 @@ let s:bundle = neobundle#get("Simple-Javascript-Indenter")
 function! s:bundle.hooks.on_source(bundle)
   let g:SimpleJSIndenter_BriefMode=2
 endfunction
+unlet s:bundle
 " }}}
 
 " indentLine {{{
@@ -554,6 +673,7 @@ let s:bundle = neobundle#get("indentLine")
 function! s:bundle.hooks.on_source(bundle)
   let g:indentLine_faster=1
 endfunction
+unlet s:bundle
 " }}}
 
 " jedi-vim {{{
@@ -568,6 +688,7 @@ function! s:bundle.hooks.on_source(bundle)
   endif
   let g:neocomplete#force_omni_input_patterns.python = '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*'
 endfunction
+unlet s:bundle
 " }}
 
 " smartinput {{{
@@ -635,6 +756,7 @@ let s:bundle = neobundle#get("vim-smartinput-endwise")
 function! s:bundle.hooks.on_source(bundle)
   call smartinput_endwise#define_default_rules()
 endfunction
+unlet s:bundle
 
 let s:bundle = neobundle#get("vim-submode")
 function! s:bundle.hooks.on_source(bundle)
@@ -656,6 +778,7 @@ function! s:bundle.hooks.on_source(bundle)
   call submode#map('winsize', 'n',  '', '+', '<C-w>+')
   call submode#map('winsize', 'n',  '', '-', '<C-w>-')
 endfunction
+unlet s:bundle
 
 " neocomplete
 imap <C-k> <Plug>(neosnippet_expand_or_jump)
@@ -807,6 +930,31 @@ function! s:bundle.hooks.on_source(bundle)
   " Tell Neosnippet about the other snippets
   let g:neosnippet#snippets_directory='~/.vim/bundle/vim-snippets/snippets'
 endfunction
+unlet s:bundle
+
+" Gist.vim {{{
+nnoremap [gist] <Nop>
+nmap ,s  [gist]
+nnoremap [gist]g :Gist<CR>
+nnoremap [gist]p :Gist -p<CR>
+nnoremap [gist]e :Gist -e<CR>
+nnoremap [gist]d :Gist -d<CR>
+nnoremap [gist]l :Gist -l<CR>
+
+let s:bundle = neobundle#get("gist-vim")
+function! s:bundle.hooks.on_source(bundle)
+  if has("mac")
+    let g:gist_clip_command = 'pbcopy'
+  elseif has("unix")
+    let g:gist_clip_command = 'xclip -selection clipboard'
+  endif
+
+  let g:gist_detect_filetype = 1
+  let g:gist_open_browser_after_pose = 1
+  let g:gist_show_privates = 1
+endfunction
+unlet s:bundle
+" }}}
 
 " slimv {{{
 set tags=$HOME/.vim/tags/lisp.tags
