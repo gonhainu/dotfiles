@@ -1,3 +1,6 @@
+augroup MyAutoCmd
+  autocmd!
+augroup END
 syntax on
 set nocompatible
 set t_Co=256
@@ -31,7 +34,6 @@ set wildmenu " コマンドライン補完を便利に
 set wildmode=list:full " リスト表示，最長マッチ
 " タイプ途中のコマンドを画面最下行に表示
 set showcmd
-set showtabline=2
 " ステータスラインを常に表示する
 set laststatus=2
 "set statusline=%<%f\ %m%r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}[%Y]%=%l,%c%V%8P
@@ -114,6 +116,15 @@ vnoremap <silent> k gk
 vnoremap <silent> gk k
 vnoremap <silent> $ g$
 vnoremap <silent> g$ $
+
+" JとDで半ページ移動
+nnoremap J <C-D>
+nnoremap K <C-U>
+
+" <Space>h or <Space>lで行頭か行末に移動する
+nnoremap [space]h ^
+nnoremap [space]l $
+
 " Ctrl-hjklでウィンドウ移動
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
@@ -133,13 +144,16 @@ noremap ; :
 " jjでEsc
 inoremap <silent> jj <Esc>
 
+set showtabline=2
 " タブ移動を簡単にする
 " <a href="http://doruby.kbmj.com/aisi/20091218/Vim__" target="_blank" rel="noreferrer" style="cursor:help;display:inline !important;">http://doruby.kbmj.com/aisi/20091218/Vim__</a>
 nnoremap <silent> <leader>tf :<c-u>tabfirst<cr>
 nnoremap <silent> <leader>tl :<c-u>tablast<cr>
 nnoremap <silent> <leader>tn :<c-u>tabnext<cr>
+nnoremap <silent> <S-Right>  :<C-u>tabnext<CR>
 nnoremap <silent> <leader>tN :<c-u>tabNext<cr>
 nnoremap <silent> <leader>tp :<c-u>tabprevious<cr>
+nnoremap <silent> <S-Left>   :<C-u>tabprevious<CR>
 nnoremap <silent> <leader>te :<c-u>tabedit<cr>
 nnoremap <silent> <leader>tc :<c-u>tabclose<cr>
 nnoremap <silent> <leader>to :<c-u>tabonly<cr>
@@ -195,10 +209,7 @@ nnoremap <Space><Space>.. :<C-u>source $MYVIMRC<CR>
 nnoremap <silent> <Space>rg :<C-u>source $MYGVIMRC<CR>
 
 " .vimrcや.gvimrcを変更すると、自動的に変更が反映されるようにする
-" augroup MyAutoCmd
-" autocmd!
-" augroup END
-"  
+"
 " if !has('gui_running') && !(has('win32') || has('win64'))
 "   " .vimrcの再読込時にも色が変化するようにする
 "   autocmd MyAutoCmd BufWritePost $MYVIMRC nested source $MYVIMRC

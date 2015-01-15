@@ -76,6 +76,9 @@ NeoBundle 'AndrewRadev/switch.vim' "{{{
 NeoBundle 'scrooloose/syntastic' "{{{
 NeoBundle 'tpope/vim-surround' "{{{
 " NeoBundle 'tpope/vim-markdown'
+NeoBundle 'godlygeek/tabular'
+NeoBundle 'joker1007/vim-markdown-quote-syntax'
+"NeoBundle 'rcmdnk/vim-markdown-quote-syntax'
 NeoBundle 'rcmdnk/vim-markdown'
 NeoBundle 'tpope/vim-bundler'
 " NeoBundle 'tpope/vim-endwise' "{{{
@@ -89,6 +92,7 @@ NeoBundle 'tpope/vim-rails', {
 NeoBundle 'thinca/vim-quickrun' "{{{
 NeoBundleLazy 'thinca/vim-ref'
 NeoBundle 'thinca/vim-threes'
+NeoBundle 'thinca/vim-visualstar'
 NeoBundle 'taka84u9/vim-ref-ri'
 NeoBundle 'ujihisa/unite-rake'
 NeoBundle 'ujihisa/unite-colorscheme'
@@ -161,63 +165,10 @@ NeoBundleLazy 'Simple-Javascript-Indenter', {
 "   let g:indent_guides_guide_size=1
 "}}}
 NeoBundle 'Yggdroot/indentLine' "{{{
-" NeoBundle 'Lokaltog/vim-easymotion' "{{{
-"   let g:EasyMotion_do_mapping = 0
-"
-"   " =======================================
-"   " Find Motions
-"   " =======================================
-"   " Jump to anywhere you want by just `4` or `3` key strokes without thinking!
-"   " `s{char}{char}{target}`
-"   nmap s <Plug>(easymotion-s2)
-"   xmap s <Plug>(easymotion-s2)
-"   omap z <Plug>(easymotion-s2)
-"   " Of course, you can map to any key you want such as `<Space>`
-"   " map <Space>(easymotion-s2)
-"
-"   " Turn on case sensitive feature
-"   let g:EasyMotion_smartcase = 1
-"
-"   " =======================================
-"   " Line Motions
-"   " =======================================
-"   " `JK` Motions: Extend line motions
-"   map <Leader>j <Plug>(easymotion-j)
-"   map <Leader>k <Plug>(easymotion-k)
-"   " keep cursor column with `JK` motions
-"   let g:EasyMotion_startofline = 0
-"
-"   " =======================================
-"   " General Configuration
-"   " =======================================
-"   let g:EasyMotion_keys = ';HKLYUIOPNM,QWERTASDGZXCVBJF'
-"   " Show target key with upper case to improve readability
-"   let g:EasyMotion_use_upper = 1
-"   " Jump to first match with enter & space
-"   let g:EasyMotion_enter_jump_first = 1
-"   let g:EasyMotion_space_jump_first = 1
-"
-"
-"   " =======================================
-"   " Search Motions
-"   " =======================================
-"   " Extend search motions with vital-over command line interface
-"   " Incremental highlight of all the matches
-"   " Now, you don't need to repetitively press `n` or `N` with EasyMotion feature
-"   " `<Tab>` & `<S-Tab>` to scroll up/down a page with next match
-"   " :h easymotion-command-line
-"   nmap g/ <Plug>(easymotion-sn)
-"   xmap g/ <Plug>(easymotion-sn)
-"   omap g/ <Plug>(easymotion-tn)
-" "}}}
+NeoBundle 'Lokaltog/vim-easymotion' "{{{
 NeoBundle 'mattn/emoji-vim'
 NeoBundle 'tpope/vim-fireplace'
 NeoBundle 'amdt/vim-niji' "{{{
-"  let g:niji_matching_filetypes = ['ruby', 'python']
-"}}}
-" NeoBundle 'nvie/vim-flake8' "{{{
-"   let g:flake8_ignore='E501'
-" "}}}
 " NeoBundle 'todesking/ruby_hl_lvar.vim' "{{{
 "   " Highlight group name for Local variable
 "   " Default: 'Identifier'
@@ -232,11 +183,19 @@ NeoBundle 'amdt/vim-niji' "{{{
 "   nmap <leader>hd <Plug>(ruby_hl_lvar-disable)
 "   nmap <leader>hr <Plug>(ruby_hl_lvar-refresh)
 " "}}}
-NeoBundleLazy "lambdalisue/vim-django-support", {
-      \ "autoload": {
-      \   "filetypes": ["python", "python3", "djangohtml"]
+NeoBundleLazy 'majutsushi/tagbar', {
+      \ "autoload" : {
+      \   "commands" : [ "TagbarToggle" ],
       \ }}
-NeoBundle "davidhalter/jedi-vim" "{{{
+" NeoBundleLazy "lambdalisue/vim-django-support", {
+"       \ "autoload": {
+"       \   "filetypes": ["python", "python3", "djangohtml"]
+"       \ }}
+NeoBundleLazy "davidhalter/jedi-vim", {
+      \ "depends": ['Shougo/neocomplete.vim'],
+      \ "autoload" : {
+      \   "filetypes" : ["python", "python3", "djangohtml"],
+      \ }}
 NeoBundleLazy "lambdalisue/vim-pyenv", {
       \ "depends": ['davidhalter/jedi-vim'],
       \ "autoload": {
@@ -244,8 +203,12 @@ NeoBundleLazy "lambdalisue/vim-pyenv", {
       \ }}
 NeoBundle 'fatih/vim-go'
 NeoBundle 'vim-jp/vim-go-extra'
+NeoBundleLazy 'sjl/gundo.vim', {
+      \ "autoload" : {
+      \   "commands" : [ 'GundoToggle' ],
+      \ }}
 
-NeoBundle 'http://git.code.sf.net/p/vim-latex/vim-latex.git'
+" NeoBundle 'http://git.code.sf.net/p/vim-latex/vim-latex.git'
 NeoBundle 'https://bitbucket.org/kovisoft/slimv'
 NeoBundle 'thinca/vim-scouter'
 "NeoBundleLocal ~/.vim/bundle/taglist
