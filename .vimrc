@@ -393,6 +393,13 @@ else
   colorscheme hybrid
 endif
 
+if (exists('+colorcolumn'))
+  set colorcolumn=80
+  highlight ColorColumn ctermbg=9
+endif
+
+let g:tex_conceal=''
+
 " let tex_flavor = 'latex'
 " set grepprg=grep\ -nH\ $*
 " set shellslash

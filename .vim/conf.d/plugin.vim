@@ -37,6 +37,8 @@ nnoremap <silent> [unite]m    :<C-u>Unite -buffer-name=bookmark -prompt=bookmark
 nnoremap <silent> [unite]rm   :<C-u>Unite -buffer-name=ref -prompt=ref> ref/man<CR>
 nnoremap <silent> [unite]g    :<C-u>Unite -buffer-name=grep grep<CR>
 nnoremap <silent> [unite]hd   :<C-u>Unite haddock -start-insert<CR>
+nnoremap <Space><Space> :split<CR> :<C-u>Unite -start-insert file_rec/async<CR>
+:noremap <Space>r <Plug>(unite_restart)
 
 let s:bundle = neobundle#get("unite.vim")
 function! s:bundle.hooks.on_source(bundle)
@@ -47,11 +49,18 @@ function! s:bundle.hooks.on_source(bundle)
   let g:unite_source_grep_max_candidates = 500
   let g:unite_force_overwrite_statusline = 0
 
+  let g:unite_source_history_yank_enable = 1
+  try
+    let g:unite_source_rec_async_command='ag --nocolor --nogroup -g ""'
+    call unite#filters#matcher_default#use(['matcher_fuzzy'])
+  catch
+  endtry
+
   " ディレクトリに対するブックマークはvimfilerをデフォルトアクションにする
   call unite#custom_default_action('source/bookmark/directory', 'vimfiler')
 
   call unite#custom#source('file_rec,file_rec/async', 'filters',
-        \ ['converter_relative_word', 'matcher_default', 
+        \ ['converter_relative_word', 'matcher_default',
         \  'sorter_rank', 'converter_relative_abbr', 'converter_file_directory'])
 
   call unite#custom#source(
@@ -771,8 +780,8 @@ function! s:bundle.hooks.on_source(bundle)
         \ 'input' : '<Del><BS>'
         \ })
   " call smartinput#define_rule({
-  "       \ 'at'    : '\s\+\%#', 
-  "       \ 'char'  : '<CR>', 
+  "       \ 'at'    : '\s\+\%#',
+  "       \ 'char'  : '<CR>',
   "       \ 'input' : "<C-o>:call setline('.', substitute(getline('.'), '\\s\\+$', '', ''))<CR><CR>"
   "       \ })
   call smartinput#define_rule({
@@ -804,13 +813,13 @@ function! s:bundle.hooks.on_source(bundle)
         \ 'input'    : '<Bar><Bar><Left>',
         \ 'filetype' : ['ruby'],
         \ })
-  call smartinput#map_to_trigger('i', '<Plug>(smartinput_BS)', 
-        \                        '<BS>', 
+  call smartinput#map_to_trigger('i', '<Plug>(smartinput_BS)',
+        \                        '<BS>',
         \                        '<BS>')
-  call smartinput#map_to_trigger('i', '<Plug>(smartinput_C-h)', 
+  call smartinput#map_to_trigger('i', '<Plug>(smartinput_C-h)',
         \                        '<BS>',
         \                        '<C-h>')
-  call smartinput#map_to_trigger('i', '<Plug>(smartinput_CR)', 
+  call smartinput#map_to_trigger('i', '<Plug>(smartinput_CR)',
         \                        '<Enter>',
         \                        '<Enter>')
 endfunction
@@ -1110,6 +1119,10 @@ endfunction
 unlet s:bundle
 " }}}
 
+" vim-easy-align {{{
+vnoremap <silent> <Enter> :EasyMotion<CR>
+" }}}
+
 " slimv {{{
 set tags=$HOME/.vim/tags/lisp.tags
 let g:paredit_mode=1
@@ -1132,4 +1145,125 @@ let g:slimv_swank_cmd = '!osascript -e "tell application \"iTerm2\" to do script
 let g:lisp_rainbow=1
 
 autocmd BufNewFile,BufRead *.asd set filetype=lisp
+" }}}
+
+" Vim-LaTeX {{{
+" filetype plugin on
+" filetype indent on
+" set shellslash
+" set grepprg=grep\ -nH\ $*
+" let g:tex_flavor='latex'
+" let g:Imap_UsePlaceHolders = 1
+" let g:Imap_DeleteEmptyPlaceHolders = 1
+" let g:Imap_StickyPlaceHolders = 0
+" let g:Tex_DefaultTargetFormat = 'pdf'
+" let g:Tex_MultipleCompileFormats='dvi,pdf'
+"let g:Tex_FormatDependency_pdf = 'pdf'
+" let g:Tex_FormatDependency_pdf = 'dvi,pdf'
+"let g:Tex_FormatDependency_pdf = 'dvi,ps,pdf'
+" let g:Tex_FormatDependency_ps = 'dvi,ps'
+" let g:Tex_CompileRule_pdf = 'dvipdfmx $*.dvi'
+"let g:Tex_CompileRule_pdf = '/usr/texbin/ptex2pdf -u -l -ot "-synctex=1 -interaction=nonstopmode -file-line-error-style" $*'
+"let g:Tex_CompileRule_pdf = '/usr/texbin/pdflatex -synctex=1 -interaction=nonstopmode -file-line-error-style $*'
+"let g:Tex_CompileRule_pdf = '/usr/texbin/lualatex -synctex=1 -interaction=nonstopmode -file-line-error-style $*'
+"let g:Tex_CompileRule_pdf = '/usr/texbin/luajitlatex -synctex=1 -interaction=nonstopmode -file-line-error-style $*'
+"let g:Tex_CompileRule_pdf = '/usr/texbin/xelatex -synctex=1 -interaction=nonstopmode -file-line-error-style $*'
+"let g:Tex_CompileRule_pdf = '/usr/local/bin/ps2pdf $*.ps'
+" let g:Tex_CompileRule_ps = '/usr/texbin/dvips -Ppdf -o $*.ps $*.dvi'
+" let g:Tex_CompileRule_dvi = 'platex --interacton=nonstopmode $*'
+"let g:Tex_CompileRule_dvi = '/usr/texbin/uplatex -synctex=1 -interaction=nonstopmode -file-line-error-style $*'
+" let g:Tex_BibtexFlavor = '/usr/texbin/pbibtex'
+" let g:Tex_MakeIndexFlavor = '/usr/texbin/mendex -U $*.idx'
+" let g:Tex_UseEditorSettingInDVIViewer = 1
+" let g:Tex_ViewRule_pdf = 'Skim'
+"let g:Tex_ViewRule_pdf = '/usr/bin/open -a Skim.app'
+"let g:Tex_ViewRule_pdf = '/usr/bin/open -a Preview.app'
+"let g:Tex_ViewRule_pdf = '/usr/bin/open -a TeXShop.app'
+"let g:Tex_ViewRule_pdf = '/Applications/TeXworks.app/Contents/MacOS/TeXworks'
+"let g:Tex_ViewRule_pdf = '/Applications/texstudio.app/Contents/MacOS/texstudio --pdf-viewer-only'
+"let g:Tex_ViewRule_pdf = '/usr/bin/open -a Firefox.app'
+"let g:Tex_ViewRule_pdf = '/usr/bin/open -a "Adobe Reader.app"'
+"let g:Tex_ViewRule_pdf = '/usr/bin/open'
+" }}}
+
+" vim-latex {{{
+aug MyAutoCmd
+  autocmd!
+aug END
+
+nnoremap <LocalLeader>ls :<C-u>VimLatexCompileSS<CR>
+
+let g:latex_latexmk_enabled = 1
+let g:latex_latexmk_options = '-pdfdvi'
+
+let g:latex_view_method = 'general'
+let g:latex_view_general_viewer = '/Applications/Skim.app/Contents/MacOS/Skim'
+
+let g:latex_fold_parts = [
+      \ "appendix",
+      \ "frontmatter",
+      \ "mainmatter",
+      \ "backmatter",
+      \]
+let g:latex_fold_sections = [
+      \ "part",
+      \ "chapter",
+      \ "section",
+      \ "subsection",
+      \ "subsubsection",
+      \]
+let g:latex_fold_enable = 1
+let g:latex_fold_automatic = 1
+let g:latex_fold_envs = 0
+
+" 自動コンパイル
+let g:latex_latexmk_continuous = 1
+let g:latex_latexmk_background = 1
+" コンパイル終了後のエラー通知オフ
+let g:latex_latexmk_callback = 1
+
+let g:latex_toc_split_pos = "topleft"
+let g:latex_toc_width = 10
+
+" SyncTex
+function! s:syncTexForward()
+  call system('/Applications/Skim.app/Contents/SharedSupport/displayline -g'
+        \ . line(".") . " "
+        \ . g:latex#data[b:latex.id].out() . " "
+        \ . expand('%:p'))
+endfunction
+
+" Preview
+function! s:previewTex() range
+  let l:tmp = @@
+  silent normal gvy
+  let l:selected = split(@@, "\n")
+  let @@ = l:tmp
+
+  let l:template1 = ["\\documentclass[a4paper]{jsarticle}",
+                   \ "\\usepackage[dvipdfmx]{graphicx}",
+                   \ "\\usepackage{amsmath,amssymb,bm}",
+                   \ "\\pagestyle{empty}",
+                   \ "\\begin{document}"]
+  let l:template2 = ["\\end{document}"]
+
+  let l:output_file = "preview.tex"
+  call writefile(extend(extend(l:template1, l:selected), template2), l:output_file)
+  silent call system("latexmk -pdfdvi preview &")
+endfunction
+
+autocmd MyAutoCmd FileType tex
+      \   nnoremap <buffer> <Space>la :call latex#motion#next_section(0,1,0)<CR>v:call latex#motion#next_section(0,0,1)<CR>:call <SID>previewTex()<CR>
+      \ | vnoremap <buffer> <Space>la :call <SID>previewTex()<CR>
+      \ | nnoremap <buffer> <Space>ls :call <SID>syncTexForward()<CR>
+
+let s:bundle = neobundle#get("vim-latex")
+function! s:bundle.hooks.on_source(bundle)
+  if !exists('g:neocomplete#sources#omni#input_patterns')
+    let g:neocomplete#sources#omni#input_patterns. = {}
+  endif
+  "let g:neocomplete#sources#omni#input_patterns.tex = '\\ref{\s*[0-9A-Za-z_:]*'
+  let g:neocomplete#sources#omni#input_patterns.tex = '\\cite{\s*[0-9A-Za-z_:]*\|\\ref{\s*[0-9A-Za-z_:]*'
+endfunction
+unlet s:bundle
 " }}}

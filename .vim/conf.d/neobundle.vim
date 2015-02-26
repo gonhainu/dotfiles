@@ -27,7 +27,7 @@ NeoBundle 'kannokanno/previm'
 NeoBundle 'Shougo/unite-outline'
 NeoBundle 'Shougo/unite.vim', {
       \ 'autoload' : {
-      \     'commands' : [ "Unite", "UniteWithBufferDir", "UniteWithCurrentDir" ]
+      \   'commands' : [ "Unite", "UniteWithBufferDir", "UniteWithCurrentDir" ]
       \ }}
 NeoBundle 'Shougo/context_filetype.vim'
 if has('lua')
@@ -75,11 +75,13 @@ NeoBundleLazy 'mattn/gist-vim', {
 NeoBundle 'AndrewRadev/switch.vim' "{{{
 NeoBundle 'scrooloose/syntastic' "{{{
 NeoBundle 'tpope/vim-surround' "{{{
-" NeoBundle 'tpope/vim-markdown'
 NeoBundle 'godlygeek/tabular'
 NeoBundle 'joker1007/vim-markdown-quote-syntax'
 "NeoBundle 'rcmdnk/vim-markdown-quote-syntax'
-NeoBundle 'rcmdnk/vim-markdown'
+NeoBundleLazy 'rcmdnk/vim-markdown', {
+      \ 'autoload': {
+      \     'filetypes': ['markdown']
+      \ }}
 NeoBundle 'tpope/vim-bundler'
 " NeoBundle 'tpope/vim-endwise' "{{{
 "   let g:endwise_no_mappings=1
@@ -98,7 +100,10 @@ NeoBundle 'ujihisa/unite-rake'
 NeoBundle 'ujihisa/unite-colorscheme'
 NeoBundle 'tomtom/tcomment_vim' "{{{
 NeoBundle 'vim-scripts/closetag.vim' "{{{
-NeoBundle 'vim-scripts/ruby-matchit'
+NeoBundleLazy 'vim-scripts/ruby-matchit', {
+      \ 'autoload': {
+      \   'filetypes': ['ruby', 'eruby']
+      \ }}
 NeoBundle 'vim-scripts/Align'
 NeoBundle 'kana/vim-submode'
 NeoBundle 'osyo-manga/vim-over' "{{{
@@ -107,31 +112,28 @@ NeoBundle 'LeafCage/yankround.vim' "{{{
 NeoBundleLazy 'kien/ctrlp.vim'
 NeoBundle 'itchyny/lightline.vim' "{{{
 NeoBundle 'altercation/vim-colors-solarized' "{{{
-  " let g:solarized_termcolors=256
-  " let g:solarized_termtrans=1
-  " colorscheme solarized
-"}}}
 NeoBundle 'nanotech/jellybeans.vim'
 NeoBundle 'tomasr/molokai'
-  " let g:molokai_original = 1
-  " let g:rehash256 = 1
-  " colorscheme molokai
-
 NeoBundle 'w0ng/vim-hybrid' "{{{
-  "let g:hybrid_use_Xresources = 1
-  "colorscheme hybrid
-"}}}
 NeoBundle 'vim-scripts/wombat256.vim'
-  " colorscheme wombat256mod
 NeoBundle 'chriskempson/vim-tomorrow-theme'
 NeoBundle 'scrooloose/nerdtree'
 NeoBundle 'itchyny/calendar.vim' "{{{
-NeoBundle 'rhysd/neco-ruby-keyword-args'
-NeoBundle 'rhysd/unite-ruby-require.vim' "{{{
+NeoBundleLazy 'rhysd/neco-ruby-keyword-args', {
+      \ 'autoload': {
+      \   'filetypes': ['ruby', 'eruby'],
+      \ }}
+NeoBundleLazy 'rhysd/unite-ruby-require.vim', {
+      \ 'autoload': {
+      \   'filetypes': ['ruby', 'eruby'],
+      \ }}
 NeoBundle 'rhysd/unite-codic.vim'
 NeoBundle 'koron/codic-vim'
 NeoBundle 'honza/vim-snippets'
-NeoBundle 'aharisu/vim_goshrepl' "{{{
+NeoBundleLazy 'aharisu/vim_goshrepl', {
+      \ 'autoload' : {
+      \   'filename_patterns' : '.*\.scm',
+      \ }}
 NeoBundle 'aharisu/vim-gdev' "{{{
 NeoBundle 'kana/vim-textobj-user'
 NeoBundle 'kana/vim-textobj-indent'
@@ -147,13 +149,16 @@ NeoBundle 'airblade/vim-gitgutter'
 NeoBundle 'bonsaiben/bootstrap-snippets'
 NeoBundle 'MarcWeber/vim-addon-mw-utils'
 NeoBundle 'tomtom/tlib_vim'
-NeoBundle 'vim-ruby/vim-ruby'
+NeoBundleLazy 'vim-ruby/vim-ruby', {
+      \ 'autoload': {
+      \   'filetypes': ['ruby', 'eruby'],
+      \ }}
 NeoBundle 'moro/vim-review'
 NeoBundleLazy 'moll/vim-node' "{{{
 NeoBundle 't9md/vim-textmanip' "{{{
 NeoBundleLazy 'Simple-Javascript-Indenter', {
       \ 'autoload' : {
-      \   'filetype' : ['js', 'html'],
+      \   'filetypes' : ['js', 'html'],
       \   },
       \ }
 " NeoBundle 'nathanaelkane/vim-indent-guides' "{{{
@@ -201,16 +206,23 @@ NeoBundleLazy "lambdalisue/vim-pyenv", {
       \ "autoload": {
       \   "filetypes": ["python", "python3", "djangohtml"]
       \ }}
-NeoBundle 'fatih/vim-go'
+NeoBundleLazy 'fatih/vim-go', {
+      \ "autoload" : {
+      \   'filename_patterns' : ['.*\.go'],
+      \ }}
 NeoBundle 'vim-jp/vim-go-extra'
 NeoBundleLazy 'sjl/gundo.vim', {
       \ "autoload" : {
       \   "commands" : [ 'GundoToggle' ],
       \ }}
 
-" NeoBundle 'http://git.code.sf.net/p/vim-latex/vim-latex.git'
+" NeoBundle 'git://git.code.sf.net/p/vim-latex/vim-latex.git'
+NeoBundle 'lervag/vim-latex'
 NeoBundle 'https://bitbucket.org/kovisoft/slimv'
 NeoBundle 'thinca/vim-scouter'
+NeoBundle 'bronson/vim-trailing-whitespace'
+NeoBundle 'junegunn/vim-easy-align'
+NeoBundle 'kien/rainbow_parentheses.vim'
 "NeoBundleLocal ~/.vim/bundle/taglist
 
 call neobundle#end()
