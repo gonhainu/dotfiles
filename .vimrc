@@ -386,12 +386,15 @@ runtime! conf.d/*.vim
 set background=dark
 syntax enable
 
-if ($ft=='ruby')
-  colorscheme Tomorrow-Night
-else
-  let g:hybrid_use_iTerm_colors = 1
-  colorscheme hybrid
-endif
+colorscheme molokai
+let g:molokai_original=1
+let g:rehash256=1
+" if ($ft=='ruby')
+"   colorscheme Tomorrow-Night
+" else
+"   let g:hybrid_use_iTerm_colors = 1
+"   colorscheme hybrid
+" endif
 
 if (exists('+colorcolumn'))
   set colorcolumn=80

@@ -87,7 +87,7 @@ NeoBundle 'tpope/vim-bundler'
 "   let g:endwise_no_mappings=1
 " "}}}
 NeoBundle 'tpope/vim-fugitive' "{{{
-NeoBundle 'tpope/vim-rails', {
+NeoBundleLazy 'tpope/vim-rails', {
       \ 'autoload': {
       \     'filetypes' : ['haml', 'ruby', 'eruby']
       \ }}
@@ -210,12 +210,22 @@ NeoBundleLazy 'fatih/vim-go', {
       \ "autoload" : {
       \   'filename_patterns' : ['.*\.go'],
       \ }}
-NeoBundle 'vim-jp/vim-go-extra'
+NeoBundleLazy 'vim-jp/vim-go-extra', {
+      \ "autoload" : {
+      \   'filename_patterns' : ['.*\.go'],
+      \ }}
 NeoBundleLazy 'sjl/gundo.vim', {
       \ "autoload" : {
       \   "commands" : [ 'GundoToggle' ],
       \ }}
-
+NeoBundleLazy 'hynek/vim-python-pep8-indent', {
+      \ "autoload" : {
+      \   'filetypes' : ['python', 'python3']
+      \ }}
+NeoBundleLazy 'chrisbra/csv.vim', {
+      \ 'autoload' : {
+      \   'filename_patterns' : ['.*\.csv'],
+      \ }}
 " NeoBundle 'git://git.code.sf.net/p/vim-latex/vim-latex.git'
 NeoBundle 'lervag/vim-latex'
 NeoBundle 'https://bitbucket.org/kovisoft/slimv'
